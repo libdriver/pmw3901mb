@@ -6,7 +6,7 @@
 
 ## LibDriver PMW3901MB
 
-[![API](https://img.shields.io/badge/api-reference-blue)](https://www.libdriver.com/docs/pmw3901mb/index.html)[![License](https://img.shields.io/badge/license-MIT-brightgreen.svg)](/LICENSE)
+[![API](https://img.shields.io/badge/api-reference-blue)](https://www.libdriver.com/docs/pmw3901mb/index.html) [![License](https://img.shields.io/badge/license-MIT-brightgreen.svg)](/LICENSE)
 
 PMW3901MB 是 PixArt Imaging 最新的光學導航芯片，採用遠場光學技術設計，可實現空中導航。它採用 28 引腳板載芯片 (COB) 封裝，提供 X-Y 運動信息，工作範圍從 80 毫米到無窮遠。它最適合運動檢測的遠場應用。
 

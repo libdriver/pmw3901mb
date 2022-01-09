@@ -6,7 +6,7 @@
 
 ## LibDriver PMW3901MB
 
-[![API](https://img.shields.io/badge/api-reference-blue)](https://www.libdriver.com/docs/pmw3901mb/index.html)[![License](https://img.shields.io/badge/license-MIT-brightgreen.svg)](/LICENSE)
+[![API](https://img.shields.io/badge/api-reference-blue)](https://www.libdriver.com/docs/pmw3901mb/index.html) [![License](https://img.shields.io/badge/license-MIT-brightgreen.svg)](/LICENSE)
 
 The PMW3901MB is PixArt Imaging's latest optical  navigation chip designed with far field optics technology  that enables navigation in the air. It is housed in a 28-pin chip-on-board  (COB)  package  that  provides  X-Y  motion information  with  a  wide  working  range  of  80  mm  to infinity.  It  is  most  suitable  for  far  field application  for motion detection. 
 
