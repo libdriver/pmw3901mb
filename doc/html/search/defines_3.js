@@ -1,0 +1,23 @@
+var searchData=
+[
+  ['pmw3901mb_5freg_5fdelta_5fx_5fh_268',['PMW3901MB_REG_DELTA_X_H',['../driver__pmw3901mb_8c.html#a3d83a4486f336cb52df33b282bc1e88e',1,'driver_pmw3901mb.c']]],
+  ['pmw3901mb_5freg_5fdelta_5fx_5fl_269',['PMW3901MB_REG_DELTA_X_L',['../driver__pmw3901mb_8c.html#ac00f6bd79f971101e35db22552fe1232',1,'driver_pmw3901mb.c']]],
+  ['pmw3901mb_5freg_5fdelta_5fy_5fh_270',['PMW3901MB_REG_DELTA_Y_H',['../driver__pmw3901mb_8c.html#ac7b95b497e0ec81b735055a241013daf',1,'driver_pmw3901mb.c']]],
+  ['pmw3901mb_5freg_5fdelta_5fy_5fl_271',['PMW3901MB_REG_DELTA_Y_L',['../driver__pmw3901mb_8c.html#a5803fa081728b9752de769a313971a5a',1,'driver_pmw3901mb.c']]],
+  ['pmw3901mb_5freg_5finverse_5fproduct_5fid_272',['PMW3901MB_REG_INVERSE_PRODUCT_ID',['../driver__pmw3901mb_8c.html#a56f328057f8b45c6cc31dd6d0eb5292f',1,'driver_pmw3901mb.c']]],
+  ['pmw3901mb_5freg_5fmaximum_5fraw_5fdata_273',['PMW3901MB_REG_MAXIMUM_RAW_DATA',['../driver__pmw3901mb_8c.html#af33d7afa4de6242e15f1d27e5a4b0f45',1,'driver_pmw3901mb.c']]],
+  ['pmw3901mb_5freg_5fminimum_5fraw_5fdata_274',['PMW3901MB_REG_MINIMUM_RAW_DATA',['../driver__pmw3901mb_8c.html#a0e3acee1b4903a0fb0de0966d9b268ec',1,'driver_pmw3901mb.c']]],
+  ['pmw3901mb_5freg_5fmotion_275',['PMW3901MB_REG_MOTION',['../driver__pmw3901mb_8c.html#a727912a101a6a3bcb443a0925b79ef58',1,'driver_pmw3901mb.c']]],
+  ['pmw3901mb_5freg_5fmotion_5fburst_276',['PMW3901MB_REG_MOTION_BURST',['../driver__pmw3901mb_8c.html#aba1764469365dfea99522cca6ca84fa8',1,'driver_pmw3901mb.c']]],
+  ['pmw3901mb_5freg_5fobservation_277',['PMW3901MB_REG_OBSERVATION',['../driver__pmw3901mb_8c.html#a7a75565acce36691ae9e2d282923c06c',1,'driver_pmw3901mb.c']]],
+  ['pmw3901mb_5freg_5fpower_5fup_5freset_278',['PMW3901MB_REG_POWER_UP_RESET',['../driver__pmw3901mb_8c.html#add28eb1773a989609f0f946a4a8dc4b1',1,'driver_pmw3901mb.c']]],
+  ['pmw3901mb_5freg_5fproduct_5fid_279',['PMW3901MB_REG_PRODUCT_ID',['../driver__pmw3901mb_8c.html#a9b97b44fd27d5e939fa8ab24718e5278',1,'driver_pmw3901mb.c']]],
+  ['pmw3901mb_5freg_5fraw_5fdata_5fgrab_280',['PMW3901MB_REG_RAW_DATA_GRAB',['../driver__pmw3901mb_8c.html#a8880a9b0792325a9c83c1cd64ec79cf7',1,'driver_pmw3901mb.c']]],
+  ['pmw3901mb_5freg_5fraw_5fdata_5fgrab_5fstatus_281',['PMW3901MB_REG_RAW_DATA_GRAB_STATUS',['../driver__pmw3901mb_8c.html#aaabaa14c11321739db87b2fd99b9c40a',1,'driver_pmw3901mb.c']]],
+  ['pmw3901mb_5freg_5fraw_5fdata_5fsum_282',['PMW3901MB_REG_RAW_DATA_SUM',['../driver__pmw3901mb_8c.html#aa46dbeb0770551acefa64930adfe79f0',1,'driver_pmw3901mb.c']]],
+  ['pmw3901mb_5freg_5frevision_5fid_283',['PMW3901MB_REG_REVISION_ID',['../driver__pmw3901mb_8c.html#a8d5dce5ee7c1784f27db21047df86cb0',1,'driver_pmw3901mb.c']]],
+  ['pmw3901mb_5freg_5fshutdown_284',['PMW3901MB_REG_SHUTDOWN',['../driver__pmw3901mb_8c.html#aeefbe482d2d453c4462a72959d6f2702',1,'driver_pmw3901mb.c']]],
+  ['pmw3901mb_5freg_5fshutter_5flower_285',['PMW3901MB_REG_SHUTTER_LOWER',['../driver__pmw3901mb_8c.html#a118548a0aed912b09fec7a0efcad966c',1,'driver_pmw3901mb.c']]],
+  ['pmw3901mb_5freg_5fshutter_5fupper_286',['PMW3901MB_REG_SHUTTER_UPPER',['../driver__pmw3901mb_8c.html#a8e077c76b2e95d4b59cd99497d409426',1,'driver_pmw3901mb.c']]],
+  ['pmw3901mb_5freg_5fsqual_287',['PMW3901MB_REG_SQUAL',['../driver__pmw3901mb_8c.html#af0a71c2d75f59519a7a1e5f36ddbb791',1,'driver_pmw3901mb.c']]]
+];
