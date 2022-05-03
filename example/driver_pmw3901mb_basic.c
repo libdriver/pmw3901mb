@@ -47,7 +47,7 @@ static pmw3901mb_handle_t gs_handle;        /**< pmw3901mb handle */
  */
 uint8_t pmw3901mb_basic_init(void)
 {
-    volatile uint8_t res;
+    uint8_t res;
     
     /* link interface function */
     DRIVER_PMW3901MB_LINK_INIT(&gs_handle, pmw3901mb_handle_t);
@@ -63,7 +63,7 @@ uint8_t pmw3901mb_basic_init(void)
     
     /* init pmw3901mb */
     res = pmw3901mb_init(&gs_handle);
-    if (res)
+    if (res != 0)
     {
         pmw3901mb_interface_debug_print("pmw3901mb: init failed.\n");
        
@@ -72,20 +72,20 @@ uint8_t pmw3901mb_basic_init(void)
     
     /* chip power up */
     res = pmw3901mb_power_up(&gs_handle);
-    if (res)
+    if (res != 0)
     {
         pmw3901mb_interface_debug_print("pmw3901mb: power up failed.\n");
-        pmw3901mb_deinit(&gs_handle);
+        (void)pmw3901mb_deinit(&gs_handle);
         
         return 1;
     }
     
     /* set optimum performace */
     res = pmw3901mb_set_optimum_performace(&gs_handle);
-    if (res)
+    if (res != 0)
     {
         pmw3901mb_interface_debug_print("pmw3901mb: set optimum performace failed.\n");
-        pmw3901mb_deinit(&gs_handle);
+        (void)pmw3901mb_deinit(&gs_handle);
         
         return 1;
     }
@@ -106,9 +106,9 @@ uint8_t pmw3901mb_basic_init(void)
  */
 uint8_t pmw3901mb_basic_read(float height_m, pmw3901mb_motion_t *motion, float *delta_x, float *delta_y)
 {
-    volatile uint8_t res;
+    uint8_t res;
     
-    if (pmw3901mb_burst_read(&gs_handle, motion))
+    if (pmw3901mb_burst_read(&gs_handle, motion) != 0)
     {
         return 1;
     }
@@ -118,19 +118,15 @@ uint8_t pmw3901mb_basic_read(float height_m, pmw3901mb_motion_t *motion, float *
         {
             /* convert the delta x */
             res = pmw3901mb_delta_raw_to_delta_cm(&gs_handle, motion->delta_x, height_m, (float *)delta_x);
-            if (res)
+            if (res != 0)
             {
-                pmw3901mb_interface_debug_print("pmw3901mb: delta raw to delta cm failed.\n");
-               
                 return 1;
             }
             
             /* convert the delta y */
             res = pmw3901mb_delta_raw_to_delta_cm(&gs_handle, motion->delta_y, height_m, (float *)delta_y);
-            if (res)
+            if (res != 0)
             {
-                pmw3901mb_interface_debug_print("pmw3901mb: delta raw to delta cm failed.\n");
-               
                 return 1;
             }
         }
@@ -153,7 +149,7 @@ uint8_t pmw3901mb_basic_read(float height_m, pmw3901mb_motion_t *motion, float *
  */
 uint8_t pmw3901mb_basic_deinit(void)
 {
-    if (pmw3901mb_deinit(&gs_handle))
+    if (pmw3901mb_deinit(&gs_handle) != 0)
     {
         return 1;
     }

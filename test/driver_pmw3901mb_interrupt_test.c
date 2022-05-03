@@ -37,7 +37,7 @@
 #include "driver_pmw3901mb_interrupt_test.h"
 
 static pmw3901mb_handle_t gs_handle;        /**< pmw3901mb handle */
-volatile static uint8_t gs_flag;            /**< inner flag */
+static uint8_t gs_flag;            /**< inner flag */
 
 /**
  * @brief     interrupt test irq
@@ -49,17 +49,17 @@ volatile static uint8_t gs_flag;            /**< inner flag */
  */
 uint8_t pmw3901mb_interrupt_test_irq_handler(float height_m)
 {
-    volatile uint8_t res;
-    volatile float delta_x;
-    volatile float delta_y;
+    uint8_t res;
+    float delta_x;
+    float delta_y;
     pmw3901mb_motion_t motion;
     
     /* burst read */
     res = pmw3901mb_burst_read(&gs_handle, &motion);
-    if (res)
+    if (res != 0)
     {
         pmw3901mb_interface_debug_print("pmw3901mb: burst read failed.\n");
-        pmw3901mb_set_motion(&gs_handle, 0x00);
+        (void)pmw3901mb_set_motion(&gs_handle, 0x00);
         
         return 1;
     }
@@ -69,20 +69,20 @@ uint8_t pmw3901mb_interrupt_test_irq_handler(float height_m)
     {
         /* convert the delta x */
         res = pmw3901mb_delta_raw_to_delta_cm(&gs_handle, motion.delta_x, height_m, (float *)&delta_x);
-        if (res)
+        if (res != 0)
         {
             pmw3901mb_interface_debug_print("pmw3901mb: delta raw to delta cm failed.\n");
-            pmw3901mb_set_motion(&gs_handle, 0x00);
+            (void)pmw3901mb_set_motion(&gs_handle, 0x00);
             
             return 1;
         }
         
         /* convert the delta y */
         res = pmw3901mb_delta_raw_to_delta_cm(&gs_handle, motion.delta_y, height_m, (float *)&delta_y);
-        if (res)
+        if (res != 0)
         {
             pmw3901mb_interface_debug_print("pmw3901mb: delta raw to delta cm failed.\n");
-            pmw3901mb_set_motion(&gs_handle, 0x00);
+            (void)pmw3901mb_set_motion(&gs_handle, 0x00);
             
             return 1;
         }
@@ -103,7 +103,7 @@ uint8_t pmw3901mb_interrupt_test_irq_handler(float height_m)
     
     /* clear the interrupt flag */
     res = pmw3901mb_set_motion(&gs_handle, 0x00);
-    if (res)
+    if (res != 0)
     {
         pmw3901mb_interface_debug_print("pmw3901mb: set motion failed.\n");
        
@@ -123,7 +123,7 @@ uint8_t pmw3901mb_interrupt_test_irq_handler(float height_m)
  */
 uint8_t pmw3901mb_interrupt_test(uint32_t times)
 {
-    volatile uint8_t res;
+    uint8_t res;
     pmw3901mb_info_t info;
     
     /* link interface function */
@@ -140,7 +140,7 @@ uint8_t pmw3901mb_interrupt_test(uint32_t times)
     
     /* get information */
     res = pmw3901mb_info(&info);
-    if (res)
+    if (res != 0)
     {
         pmw3901mb_interface_debug_print("pmw3901mb: get info failed.\n");
        
@@ -165,7 +165,7 @@ uint8_t pmw3901mb_interrupt_test(uint32_t times)
     
     /* init pmw3901mb */
     res = pmw3901mb_init(&gs_handle);
-    if (res)
+    if (res != 0)
     {
         pmw3901mb_interface_debug_print("pmw3901mb: init failed.\n");
        
@@ -174,20 +174,20 @@ uint8_t pmw3901mb_interrupt_test(uint32_t times)
     
     /* chip power up */
     res = pmw3901mb_power_up(&gs_handle);
-    if (res)
+    if (res != 0)
     {
         pmw3901mb_interface_debug_print("pmw3901mb: power up failed.\n");
-        pmw3901mb_deinit(&gs_handle);
+        (void)pmw3901mb_deinit(&gs_handle);
         
         return 1;
     }
     
     /* set optimum performace */
     res = pmw3901mb_set_optimum_performace(&gs_handle);
-    if (res)
+    if (res != 0)
     {
         pmw3901mb_interface_debug_print("pmw3901mb: set optimum performace failed.\n");
-        pmw3901mb_deinit(&gs_handle);
+        (void)pmw3901mb_deinit(&gs_handle);
         
         return 1;
     }
@@ -195,7 +195,7 @@ uint8_t pmw3901mb_interrupt_test(uint32_t times)
     pmw3901mb_interface_debug_print("\n");
     
     /* wait */
-    while (times)
+    while (times != 0)
     {
         gs_flag = 0x00;
         while (gs_flag == 0x00)
@@ -207,7 +207,7 @@ uint8_t pmw3901mb_interrupt_test(uint32_t times)
     
     /* finish the interrupt test */
     pmw3901mb_interface_debug_print("pmw3901mb: finish the interrupt test.\n");
-    pmw3901mb_deinit(&gs_handle);
+    (void)pmw3901mb_deinit(&gs_handle);
     
     return 0;
 }

@@ -34,8 +34,8 @@
  * </table>
  */
 
-#ifndef _DRIVER_PMW3901MB_H_
-#define _DRIVER_PMW3901MB_H_
+#ifndef DRIVER_PMW3901MB_H
+#define DRIVER_PMW3901MB_H
 
 #include <stdio.h>
 #include <stdint.h>
@@ -86,7 +86,7 @@ typedef struct pmw3901mb_handle_s
     uint8_t (*spi_read)(uint8_t reg, uint8_t *buf, uint16_t len);         /**< point to a spi_read function address */
     uint8_t (*spi_write)(uint8_t reg, uint8_t *buf, uint16_t len);        /**< point to a spi_write function address */
     void (*delay_ms)(uint32_t ms);                                        /**< point to a delay_ms function address */
-    uint16_t (*debug_print)(char *fmt, ...);                              /**< point to a debug_print function address */
+    void (*debug_print)(const char *const fmt, ...);                      /**< point to a debug_print function address */
     uint8_t inited;                                                       /**< inited flag */
 } pmw3901mb_handle_t;
 
