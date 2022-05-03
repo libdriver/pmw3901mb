@@ -34,8 +34,8 @@
  * </table>
  */
 
-#ifndef _DRIVER_PMW3901MB_FRAME_H_
-#define _DRIVER_PMW3901MB_FRAME_H_
+#ifndef DRIVER_PMW3901MB_FRAME_H
+#define DRIVER_PMW3901MB_FRAME_H
 
 #include "driver_pmw3901mb_interface.h"
 

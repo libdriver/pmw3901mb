@@ -54,7 +54,7 @@
 uint8_t g_buf[256];                                  /**< uart buffer */
 uint16_t g_len;                                      /**< uart buffer length */
 uint8_t (*g_gpio_irq)(float height_m) = NULL;        /**< gpio irq */
-volatile static uint8_t gs_flag;                     /**< inner flag */
+static uint8_t gs_flag;                     /**< inner flag */
 static uint8_t gs_frame[35][35];                     /**< frame array */
 
 /**
@@ -87,11 +87,9 @@ void HAL_GPIO_EXTI_Callback(uint16_t pin)
  * @param[in] *motion points to a pmw3901mb_motion_t structure
  * @param[in] delta_x is the delta_x in cm
  * @param[in] delta_y is the delta_y in cm
- * @return    status code
- *             - 0 success
  * @note      none
  */
-static uint8_t _callback(pmw3901mb_motion_t *motion, float delta_x, float delta_y)
+static void a_callback(pmw3901mb_motion_t *motion, float delta_x, float delta_y)
 {
     /* check the result */
     if (motion->is_valid == 1)
@@ -109,8 +107,6 @@ static uint8_t _callback(pmw3901mb_motion_t *motion, float delta_x, float delta_
         /* set flag */
         gs_flag = 1;
     }
-    
-    return 0;
 }
 
 /**
@@ -166,6 +162,7 @@ uint8_t pmw3901mb(uint8_t argc, char **argv)
             /* show pmw3901mb help */
             
             help:
+            
             pmw3901mb_interface_debug_print("pmw3901mb -i\n\tshow pmw3901mb chip and driver information.\n");
             pmw3901mb_interface_debug_print("pmw3901mb -h\n\tshow pmw3901mb help.\n");
             pmw3901mb_interface_debug_print("pmw3901mb -p\n\tshow pmw3901mb pin connections of the current board.\n");
@@ -192,10 +189,10 @@ uint8_t pmw3901mb(uint8_t argc, char **argv)
             /* reg test */
             if (strcmp("reg", argv[2]) == 0)
             {
-                volatile uint8_t res;
+                uint8_t res;
                 
                 res = pmw3901mb_register_test();
-                if (res)
+                if (res != 0)
                 {
                     return 1;
                 }
@@ -222,10 +219,10 @@ uint8_t pmw3901mb(uint8_t argc, char **argv)
         {
             if (strcmp("frame", argv[2]) == 0)
             {
-                volatile uint8_t res;
+                uint8_t res;
                 
                 res = pmw3901mb_frame_test(atoi(argv[3]));
-                if (res)
+                if (res != 0)
                 {
                     return 1;
                 }
@@ -234,23 +231,23 @@ uint8_t pmw3901mb(uint8_t argc, char **argv)
             }
             else if (strcmp("interrupt", argv[2]) == 0)
             {
-                volatile uint8_t res;
+                uint8_t res;
                 
                 res = gpio_interrupt_init();
-                if (res)
+                if (res != 0)
                 {
                     return 1;
                 }
                 g_gpio_irq = pmw3901mb_interrupt_test_irq_handler;
                 res = pmw3901mb_interrupt_test(atoi(argv[3]));
-                if (res)
+                if (res != 0)
                 {
-                    gpio_interrupt_deinit();
+                    (void)gpio_interrupt_deinit();
                     g_gpio_irq = NULL;
                     
                     return 1;
                 }
-                gpio_interrupt_deinit();
+                (void)gpio_interrupt_deinit();
                 g_gpio_irq = NULL;
                 
                 return 0;
@@ -266,13 +263,13 @@ uint8_t pmw3901mb(uint8_t argc, char **argv)
         {
             if (strcmp("frame", argv[2]) == 0)
             {
-                volatile uint8_t res;
-                volatile uint32_t k, times;
-                volatile uint32_t i, j;
+                uint8_t res;
+                uint32_t k, times;
+                uint32_t i, j;
                 
                 times = atoi(argv[3]);
                 res = pmw3901mb_frame_init();
-                if (res)
+                if (res != 0)
                 {
                     return 1;
                 }
@@ -280,9 +277,9 @@ uint8_t pmw3901mb(uint8_t argc, char **argv)
                 for (k = 0; k < times; k++)
                 {
                     res = pmw3901mb_frame_read(gs_frame);
-                    if (res)
+                    if (res != 0)
                     {
-                        pmw3901mb_frame_deinit();
+                        (void)pmw3901mb_frame_deinit();
                         
                         return 1;
                     }
@@ -307,21 +304,21 @@ uint8_t pmw3901mb(uint8_t argc, char **argv)
             }
             else if (strcmp("interrupt", argv[2]) == 0)
             {
-                volatile uint8_t res;
-                volatile uint32_t i, times;
+                uint8_t res;
+                uint32_t i, times;
                 
                 times = atoi(argv[3]);
                 res = gpio_interrupt_init();
-                if (res)
+                if (res != 0)
                 {
                     return 1;
                 }
                 g_gpio_irq = pmw3901mb_interrupt_irq_handler;
                 
-                res = pmw3901mb_interrupt_init(_callback);
-                if (res)
+                res = pmw3901mb_interrupt_init(a_callback);
+                if (res != 0)
                 {
-                    pmw3901mb_interrupt_deinit();
+                    (void)pmw3901mb_interrupt_deinit();
                     
                     return 1;
                 }
@@ -336,8 +333,8 @@ uint8_t pmw3901mb(uint8_t argc, char **argv)
                     }
                 }
                 
-                pmw3901mb_interrupt_deinit();
-                gpio_interrupt_deinit();
+                (void)pmw3901mb_interrupt_deinit();
+                (void)gpio_interrupt_deinit();
                 g_gpio_irq = NULL;
                 
                 return 0;
@@ -361,10 +358,10 @@ uint8_t pmw3901mb(uint8_t argc, char **argv)
         {
             if (strcmp("read", argv[2]) == 0)
             {
-                volatile uint8_t res;
+                uint8_t res;
                 
-                res = pmw3901mb_read_test(atof(argv[3]), atoi(argv[4]));
-                if (res)
+                res = pmw3901mb_read_test((float)atof(argv[3]), atoi(argv[4]));
+                if (res != 0)
                 {
                     return 1;
                 }
@@ -382,17 +379,17 @@ uint8_t pmw3901mb(uint8_t argc, char **argv)
         {
             if (strcmp("read", argv[2]) == 0)
             {
-                volatile uint8_t res;
-                volatile float height;
-                volatile float delta_x;
-                volatile float delta_y;
-                volatile uint32_t i, times;
+                uint8_t res;
+                float height;
+                float delta_x;
+                float delta_y;
+                uint32_t i, times;
                 pmw3901mb_motion_t motion;
                 
-                height = atof(argv[3]);
+                height = (float)atof(argv[3]);
                 times = atoi(argv[4]);
                 res = pmw3901mb_basic_init();
-                if (res)
+                if (res != 0)
                 {
                     return 1;
                 }
@@ -401,9 +398,9 @@ uint8_t pmw3901mb(uint8_t argc, char **argv)
                     read:
                     
                     res = pmw3901mb_basic_read(height, &motion, (float *)&delta_x, (float *)&delta_y);
-                    if (res)
+                    if (res != 0)
                     {
-                        pmw3901mb_basic_deinit();
+                        (void)pmw3901mb_basic_deinit();
                         
                         return 1;
                     }
@@ -460,7 +457,7 @@ uint8_t pmw3901mb(uint8_t argc, char **argv)
  */
 int main(void)
 {
-    volatile uint8_t res;
+    uint8_t res;
     
     /* stm32f407 clock init and hal init */
     clock_init();

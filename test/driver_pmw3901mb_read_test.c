@@ -49,7 +49,7 @@ static pmw3901mb_handle_t gs_handle;        /**< pmw3901mb handle */
  */
 uint8_t pmw3901mb_read_test(float height_m, uint32_t times)
 {
-    volatile uint8_t res;
+    uint8_t res;
     pmw3901mb_info_t info;
     
     /* link interface function */
@@ -66,7 +66,7 @@ uint8_t pmw3901mb_read_test(float height_m, uint32_t times)
     
     /* get information */
     res = pmw3901mb_info(&info);
-    if (res)
+    if (res != 0)
     {
         pmw3901mb_interface_debug_print("pmw3901mb: get info failed.\n");
        
@@ -91,7 +91,7 @@ uint8_t pmw3901mb_read_test(float height_m, uint32_t times)
     
     /* init pmw3901mb */
     res = pmw3901mb_init(&gs_handle);
-    if (res)
+    if (res != 0)
     {
         pmw3901mb_interface_debug_print("pmw3901mb: init failed.\n");
        
@@ -100,20 +100,20 @@ uint8_t pmw3901mb_read_test(float height_m, uint32_t times)
     
     /* chip power up */
     res = pmw3901mb_power_up(&gs_handle);
-    if (res)
+    if (res != 0)
     {
         pmw3901mb_interface_debug_print("pmw3901mb: power up failed.\n");
-        pmw3901mb_deinit(&gs_handle);
+        (void)pmw3901mb_deinit(&gs_handle);
         
         return 1;
     }
     
     /* set optimum performace */
     res = pmw3901mb_set_optimum_performace(&gs_handle);
-    if (res)
+    if (res != 0)
     {
         pmw3901mb_interface_debug_print("pmw3901mb: set optimum performace failed.\n");
-        pmw3901mb_deinit(&gs_handle);
+        (void)pmw3901mb_deinit(&gs_handle);
         
         return 1;
     }
@@ -121,17 +121,17 @@ uint8_t pmw3901mb_read_test(float height_m, uint32_t times)
     pmw3901mb_interface_debug_print("\n");
     
     /* wait */
-    while (times)
+    while (times != 0)
     {
-        volatile float delta_x;
-        volatile float delta_y;
+        float delta_x;
+        float delta_y;
         pmw3901mb_motion_t motion;
         
         start:
         
         /* burst read */
         res = pmw3901mb_burst_read(&gs_handle, &motion);
-        if (res)
+        if (res != 0)
         {
             pmw3901mb_interface_debug_print("pmw3901mb: burst read failed.\n");
            
@@ -143,7 +143,7 @@ uint8_t pmw3901mb_read_test(float height_m, uint32_t times)
         {
             /* convert the delta x */
             res = pmw3901mb_delta_raw_to_delta_cm(&gs_handle, motion.delta_x, height_m, (float *)&delta_x);
-            if (res)
+            if (res != 0)
             {
                 pmw3901mb_interface_debug_print("pmw3901mb: delta raw to delta cm failed.\n");
                
@@ -152,7 +152,7 @@ uint8_t pmw3901mb_read_test(float height_m, uint32_t times)
             
             /* convert the delta y */
             res = pmw3901mb_delta_raw_to_delta_cm(&gs_handle, motion.delta_y, height_m, (float *)&delta_y);
-            if (res)
+            if (res != 0)
             {
                 pmw3901mb_interface_debug_print("pmw3901mb: delta raw to delta cm failed.\n");
                
@@ -180,7 +180,7 @@ uint8_t pmw3901mb_read_test(float height_m, uint32_t times)
     
     /* finish the read test */
     pmw3901mb_interface_debug_print("pmw3901mb: finish the read test.\n");
-    pmw3901mb_deinit(&gs_handle);
+    (void)pmw3901mb_deinit(&gs_handle);
     
     return 0;
 }

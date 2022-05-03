@@ -1,6 +1,6 @@
 var driver__pmw3901mb__interface_8h =
 [
-    [ "pmw3901mb_interface_debug_print", "group__pmw3901mb__interface__driver.html#ga107f881cfc95dbbd462e9c00a45db198", null ],
+    [ "pmw3901mb_interface_debug_print", "group__pmw3901mb__interface__driver.html#ga169b0aa3af5ce82c943795ea3019e88c", null ],
     [ "pmw3901mb_interface_delay_ms", "group__pmw3901mb__interface__driver.html#gac914284b3c0f745485430c3c75b7fd04", null ],
     [ "pmw3901mb_interface_reset_gpio_deinit", "group__pmw3901mb__interface__driver.html#gac568697827e7a010b4ef783303aafadc", null ],
     [ "pmw3901mb_interface_reset_gpio_init", "group__pmw3901mb__interface__driver.html#gadcd6c1f755e7ad2688498fa6c1753f26", null ],

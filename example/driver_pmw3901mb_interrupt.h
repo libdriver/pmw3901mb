@@ -34,8 +34,8 @@
  * </table>
  */
 
-#ifndef _DRIVER_PMW3901MB_INTERRUPT_H_
-#define _DRIVER_PMW3901MB_INTERRUPT_H_
+#ifndef DRIVER_PMW3901MB_INTERRUPT_H
+#define DRIVER_PMW3901MB_INTERRUPT_H
 
 #include "driver_pmw3901mb_interface.h"
 
@@ -66,7 +66,7 @@ uint8_t pmw3901mb_interrupt_irq_handler(float height_m);
  *            - 1 init failed
  * @note      none
  */
-uint8_t pmw3901mb_interrupt_init(uint8_t (*callback)(pmw3901mb_motion_t *motion, float delta_x, float delta_y));
+uint8_t pmw3901mb_interrupt_init(void (*callback)(pmw3901mb_motion_t *motion, float delta_x, float delta_y));
 
 /**
  * @brief  interrupt example deinit

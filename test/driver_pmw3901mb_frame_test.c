@@ -49,8 +49,8 @@ static uint8_t gs_frame[35][35];            /**< frame array */
  */
 uint8_t pmw3901mb_frame_test(uint32_t times)
 {
-    volatile uint8_t res;
-    volatile uint8_t i, j;
+    uint8_t res;
+    uint8_t i, j;
     pmw3901mb_info_t info;
     
     /* link interface function */
@@ -67,7 +67,7 @@ uint8_t pmw3901mb_frame_test(uint32_t times)
     
     /* get information */
     res = pmw3901mb_info(&info);
-    if (res)
+    if (res != 0)
     {
         pmw3901mb_interface_debug_print("pmw3901mb: get info failed.\n");
        
@@ -92,7 +92,7 @@ uint8_t pmw3901mb_frame_test(uint32_t times)
     
     /* init pmw3901mb */
     res = pmw3901mb_init(&gs_handle);
-    if (res)
+    if (res != 0)
     {
         pmw3901mb_interface_debug_print("pmw3901mb: init failed.\n");
        
@@ -101,20 +101,20 @@ uint8_t pmw3901mb_frame_test(uint32_t times)
     
     /* chip power up */
     res = pmw3901mb_power_up(&gs_handle);
-    if (res)
+    if (res != 0)
     {
         pmw3901mb_interface_debug_print("pmw3901mb: power up failed.\n");
-        pmw3901mb_deinit(&gs_handle);
+        (void)pmw3901mb_deinit(&gs_handle);
         
         return 1;
     }
     
     /* start frame capture */
     res = pmw3901mb_start_frame_capture(&gs_handle);
-    if (res)
+    if (res != 0)
     {
         pmw3901mb_interface_debug_print("pmw3901mb: start frame capture failed.\n");
-        pmw3901mb_deinit(&gs_handle);
+        (void)pmw3901mb_deinit(&gs_handle);
         
         return 1;
     }
@@ -122,14 +122,14 @@ uint8_t pmw3901mb_frame_test(uint32_t times)
     pmw3901mb_interface_debug_print("\n");
     
     /* wait */
-    while (times)
+    while (times != 0)
     {
         /* get frame */
         res = pmw3901mb_get_frame(&gs_handle, gs_frame);
-        if (res)
+        if (res != 0)
         {
             pmw3901mb_interface_debug_print("pmw3901mb: get frame failed.\n");
-            pmw3901mb_deinit(&gs_handle);
+            (void)pmw3901mb_deinit(&gs_handle);
             
             return 1;
         }
@@ -154,17 +154,17 @@ uint8_t pmw3901mb_frame_test(uint32_t times)
     
     /* stop frame capture */
     res = pmw3901mb_stop_frame_capture(&gs_handle);
-    if (res)
+    if (res != 0)
     {
         pmw3901mb_interface_debug_print("pmw3901mb: stop frame capture failed.\n");
-        pmw3901mb_deinit(&gs_handle);
+        (void)pmw3901mb_deinit(&gs_handle);
         
         return 1;
     }
     
     /* finish the frame capture test */
     pmw3901mb_interface_debug_print("pmw3901mb: finish frame capture test.\n");
-    pmw3901mb_deinit(&gs_handle);
+    (void)pmw3901mb_deinit(&gs_handle);
     
     return 0;
 }

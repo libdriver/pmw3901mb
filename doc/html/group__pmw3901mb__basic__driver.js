@@ -13,7 +13,7 @@ var group__pmw3901mb__basic__driver =
       [ "surface_quality", "structpmw3901mb__motion__s.html#ad2f2e356f39ffd210b63a6d7163426db", null ]
     ] ],
     [ "pmw3901mb_handle_s", "structpmw3901mb__handle__s.html", [
-      [ "debug_print", "structpmw3901mb__handle__s.html#a75f9f50c23e87e9407f9ec4e34bb42f2", null ],
+      [ "debug_print", "structpmw3901mb__handle__s.html#a769d5b3a6c14790a0e126e8fe70b384b", null ],
       [ "delay_ms", "structpmw3901mb__handle__s.html#a406c9433252b7366de417b7a60915c81", null ],
       [ "inited", "structpmw3901mb__handle__s.html#a19bedf28d2b9748f6a62d9ae93f4e68f", null ],
       [ "reset_gpio_deinit", "structpmw3901mb__handle__s.html#a69c42ff05fc69e3f1621f3c0347a840b", null ],

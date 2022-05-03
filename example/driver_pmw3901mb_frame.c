@@ -47,7 +47,7 @@ static pmw3901mb_handle_t gs_handle;        /**< pmw3901mb handle */
  */
 uint8_t pmw3901mb_frame_init(void)
 {
-    volatile uint8_t res;
+    uint8_t res;
     
     /* link interface function */
     DRIVER_PMW3901MB_LINK_INIT(&gs_handle, pmw3901mb_handle_t);
@@ -63,7 +63,7 @@ uint8_t pmw3901mb_frame_init(void)
     
     /* init pmw3901mb */
     res = pmw3901mb_init(&gs_handle);
-    if (res)
+    if (res != 0)
     {
         pmw3901mb_interface_debug_print("pmw3901mb: init failed.\n");
        
@@ -72,20 +72,20 @@ uint8_t pmw3901mb_frame_init(void)
     
     /* chip power up */
     res = pmw3901mb_power_up(&gs_handle);
-    if (res)
+    if (res != 0)
     {
         pmw3901mb_interface_debug_print("pmw3901mb: power up failed.\n");
-        pmw3901mb_deinit(&gs_handle);
+        (void)pmw3901mb_deinit(&gs_handle);
         
         return 1;
     }
     
     /* start frame capture */
     res = pmw3901mb_start_frame_capture(&gs_handle);
-    if (res)
+    if (res != 0)
     {
         pmw3901mb_interface_debug_print("pmw3901mb: start frame capture failed.\n");
-        pmw3901mb_deinit(&gs_handle);
+        (void)pmw3901mb_deinit(&gs_handle);
         
         return 1;
     }
@@ -103,7 +103,7 @@ uint8_t pmw3901mb_frame_init(void)
  */
 uint8_t pmw3901mb_frame_read(uint8_t frame[35][35])
 {
-    if (pmw3901mb_get_frame(&gs_handle, frame))
+    if (pmw3901mb_get_frame(&gs_handle, frame) != 0)
     {
         return 1;
     }
@@ -123,16 +123,13 @@ uint8_t pmw3901mb_frame_read(uint8_t frame[35][35])
 uint8_t pmw3901mb_frame_deinit(void)
 {
     /* stop frame capture */
-    if (pmw3901mb_stop_frame_capture(&gs_handle))
+    if (pmw3901mb_stop_frame_capture(&gs_handle) != 0)
     {
-        pmw3901mb_interface_debug_print("pmw3901mb: stop frame capture failed.\n");
-        pmw3901mb_deinit(&gs_handle);
-        
         return 1;
     }
     
     /* deinit */
-    if (pmw3901mb_deinit(&gs_handle))
+    if (pmw3901mb_deinit(&gs_handle) != 0)
     {
         return 1;
     }

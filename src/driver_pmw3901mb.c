@@ -83,15 +83,15 @@
  *             - 1 spi read failed
  * @note       none
  */
-static uint8_t _pmw3901mb_spi_read(pmw3901mb_handle_t *handle, uint8_t reg, uint8_t *buf, uint16_t len)
+static uint8_t a_pmw3901mb_spi_read(pmw3901mb_handle_t *handle, uint8_t reg, uint8_t *buf, uint16_t len)
 {
-    if (handle->spi_read(reg, buf, len))        /* spi read */
+    if (handle->spi_read(reg, buf, len) != 0)        /* spi read */
     {
-        return 1;                               /* return error */
+        return 1;                                    /* return error */
     }
     else
     {
-        return 0;                               /* success return 0 */
+        return 0;                                    /* success return 0 */
     }
 }
 
@@ -106,15 +106,15 @@ static uint8_t _pmw3901mb_spi_read(pmw3901mb_handle_t *handle, uint8_t reg, uint
  *            - 1 spi write failed
  * @note      none
  */
-static uint8_t _pmw3901mb_spi_write(pmw3901mb_handle_t *handle, uint8_t reg, uint8_t *buf, uint16_t len)
+static uint8_t a_pmw3901mb_spi_write(pmw3901mb_handle_t *handle, uint8_t reg, uint8_t *buf, uint16_t len)
 {
-    if (handle->spi_write(0x80 | reg, buf, len))        /* spi write */
+    if (handle->spi_write(0x80 | reg, buf, len) != 0)        /* spi write */
     {
-        return 1;                                       /* return error */
+        return 1;                                            /* return error */
     }
     else
     {
-        return 0;                                       /* success return 0 */
+        return 0;                                            /* success return 0 */
     }
 }
 
@@ -132,7 +132,7 @@ static uint8_t _pmw3901mb_spi_write(pmw3901mb_handle_t *handle, uint8_t reg, uin
  */
 uint8_t pmw3901mb_init(pmw3901mb_handle_t *handle)
 {
-    volatile uint8_t id;
+    uint8_t id;
   
     if (handle == NULL)                                                                  /* check handle */
     {
@@ -191,45 +191,50 @@ uint8_t pmw3901mb_init(pmw3901mb_handle_t *handle)
         return 3;                                                                        /* return error */
     }
     
-    if (handle->spi_init())                                                              /* initialize spi bus */
+    if (handle->spi_init() != 0)                                                         /* initialize spi bus */
     {
         handle->debug_print("pmw3901mb: spi init failed.\n");                            /* spi init failed */
        
         return 1;                                                                        /* return error */
     }
-    if (handle->reset_gpio_init())                                                       /* initialize gpio */
+    if (handle->reset_gpio_init() != 0)                                                  /* initialize gpio */
     {
         handle->debug_print("pmw3901mb: gpio init failed.\n");                           /* gpio init failed */
-       
+        (void)handle->spi_deinit();                                                      /* spi deinit */
+        
         return 1;                                                                        /* return error */
     }
-    if (handle->reset_gpio_write(0))                                                     /* write 0 */
+    if (handle->reset_gpio_write(0) != 0)                                                /* write 0 */
     {
         handle->debug_print("pmw3901mb: reset failed.\n");                               /* reset failed */
-       
+        (void)handle->spi_deinit();                                                      /* spi deinit */
+        (void)handle->reset_gpio_deinit();                                               /* reset gpio deinit */
+        
         return 5;                                                                        /* return error */
     }
     handle->delay_ms(10);                                                                /* delay 10 ms */
-    if (handle->reset_gpio_write(1))                                                     /* write 1 */
+    if (handle->reset_gpio_write(1) != 0)                                                /* write 1 */
     {
         handle->debug_print("pmw3901mb: reset failed.\n");                               /* reset failed */
-       
+        (void)handle->spi_deinit();                                                      /* spi deinit */
+        (void)handle->reset_gpio_deinit();                                               /* reset gpio deinit */
+        
         return 5;                                                                        /* return error */
     }
     handle->delay_ms(10);                                                                /* delay 10 ms */
-    if (_pmw3901mb_spi_read(handle, PMW3901MB_REG_PRODUCT_ID, (uint8_t *)&id, 1))        /* get product id */
+    if (a_pmw3901mb_spi_read(handle, PMW3901MB_REG_PRODUCT_ID, (uint8_t *)&id, 1) != 0)  /* get product id */
     {
         handle->debug_print("pmw3901mb: get product id failed.\n");                      /* get product id failed */
-        handle->spi_deinit();                                                            /* spi deinit */
-        handle->reset_gpio_deinit();                                                     /* reset gpio deinit */
+        (void)handle->spi_deinit();                                                      /* spi deinit */
+        (void)handle->reset_gpio_deinit();                                               /* reset gpio deinit */
        
         return 4;                                                                        /* return error */
     }
     if (id != 0x49)                                                                      /* check id */
     {
         handle->debug_print("pmw3901mb: id is invalid.\n");                              /* id is invalid */
-        handle->spi_deinit();                                                            /* spi deinit */
-        handle->reset_gpio_deinit();                                                     /* reset gpio deinit */
+        (void)handle->spi_deinit();                                                      /* spi deinit */
+        (void)handle->reset_gpio_deinit();                                               /* reset gpio deinit */
        
         return 4;                                                                        /* return error */
     }
@@ -251,8 +256,8 @@ uint8_t pmw3901mb_init(pmw3901mb_handle_t *handle)
  */
 uint8_t pmw3901mb_deinit(pmw3901mb_handle_t *handle)
 {
-    volatile uint8_t res;
-    volatile uint8_t cmd;
+    uint8_t res;
+    uint8_t cmd;
     
     if (handle == NULL)                                                                    /* check handle */
     {
@@ -264,22 +269,22 @@ uint8_t pmw3901mb_deinit(pmw3901mb_handle_t *handle)
     }
     
     cmd = 0xB6;                                                                            /* shutdown command */
-    res = _pmw3901mb_spi_write(handle, PMW3901MB_REG_SHUTDOWN, (uint8_t *)&cmd, 1);        /* set shutdown reset */
-    if (res)                                                                               /* check result */
+    res = a_pmw3901mb_spi_write(handle, PMW3901MB_REG_SHUTDOWN, (uint8_t *)&cmd, 1);       /* set shutdown reset */
+    if (res != 0)                                                                          /* check result */
     {
         handle->debug_print("pmw3901mb: power down failed.\n");                            /* power down failed */
        
         return 4;                                                                          /* return error */
     }
     res = handle->spi_deinit();                                                            /* spi deinit */
-    if (res)                                                                               /* check result */
+    if (res != 0)                                                                          /* check result */
     {
         handle->debug_print("pmw3901mb: spi deinit failed.\n");                            /* spi deinit failed */
        
         return 1;                                                                          /* return error */
     }
     res = handle->reset_gpio_deinit();                                                     /* reset gpio deinit */
-    if (res)                                                                               /* check result */
+    if (res != 0)                                                                          /* check result */
     {
         handle->debug_print("pmw3901mb: gpio deinit failed.\n");                           /* gpio deinit failed */
        
@@ -302,8 +307,8 @@ uint8_t pmw3901mb_deinit(pmw3901mb_handle_t *handle)
  */
 uint8_t pmw3901mb_power_up(pmw3901mb_handle_t *handle)
 {
-    volatile uint8_t res;
-    volatile uint8_t cmd;
+    uint8_t res;
+    uint8_t cmd;
     
     if (handle == NULL)                                                                          /* check handle */
     {
@@ -315,7 +320,7 @@ uint8_t pmw3901mb_power_up(pmw3901mb_handle_t *handle)
     }
     
     res = handle->reset_gpio_write(0);                                                           /* write 0 */
-    if (res)                                                                                     /* check result */
+    if (res != 0)                                                                                /* check result */
     {
         handle->debug_print("pmw3901mb: set gpio failed.\n");                                    /* set gpio failed */
        
@@ -323,7 +328,7 @@ uint8_t pmw3901mb_power_up(pmw3901mb_handle_t *handle)
     }
     handle->delay_ms(10);                                                                        /* delay 10 ms */
     res = handle->reset_gpio_write(1);                                                           /* write 1 */
-    if (res)                                                                                     /* check result */
+    if (res != 0)                                                                                /* check result */
     {
         handle->debug_print("pmw3901mb: set gpio failed.\n");                                    /* set gpio failed */
        
@@ -331,8 +336,8 @@ uint8_t pmw3901mb_power_up(pmw3901mb_handle_t *handle)
     }
     handle->delay_ms(10);                                                                        /* delay 10 ms */
     cmd = 0x5A;                                                                                  /* power up command */
-    res = _pmw3901mb_spi_write(handle, PMW3901MB_REG_POWER_UP_RESET, (uint8_t *)&cmd, 1);        /* set power up reset */
-    if (res)                                                                                     /* check result */
+    res = a_pmw3901mb_spi_write(handle, PMW3901MB_REG_POWER_UP_RESET, (uint8_t *)&cmd, 1);       /* set power up reset */
+    if (res != 0)                                                                                /* check result */
     {
         handle->debug_print("pmw3901mb: set power up reset failed.\n");                          /* set power up reset failed */
        
@@ -340,36 +345,36 @@ uint8_t pmw3901mb_power_up(pmw3901mb_handle_t *handle)
     }
     handle->delay_ms(10);                                                                        /* delay 10 ms */
     
-    res = _pmw3901mb_spi_read(handle, PMW3901MB_REG_MOTION, (uint8_t *)&cmd, 1);                 /* get command */
-    if (res)                                                                                     /* check result */
+    res = a_pmw3901mb_spi_read(handle, PMW3901MB_REG_MOTION, (uint8_t *)&cmd, 1);                /* get command */
+    if (res != 0)                                                                                /* check result */
     {
         handle->debug_print("pmw3901mb: get command failed.\n");                                 /* get command failed */
        
         return 1;                                                                                /* return error */
     }
-    res = _pmw3901mb_spi_read(handle, PMW3901MB_REG_DELTA_X_L, (uint8_t *)&cmd, 1);              /* get command */
-    if (res)                                                                                     /* check result */
+    res = a_pmw3901mb_spi_read(handle, PMW3901MB_REG_DELTA_X_L, (uint8_t *)&cmd, 1);             /* get command */
+    if (res != 0)                                                                                /* check result */
     {
         handle->debug_print("pmw3901mb: get command failed.\n");                                 /* get command failed */
        
         return 1;                                                                                /* return error */
     }
-    res = _pmw3901mb_spi_read(handle, PMW3901MB_REG_DELTA_X_H, (uint8_t *)&cmd, 1);              /* get command */
-    if (res)                                                                                     /* check result */
+    res = a_pmw3901mb_spi_read(handle, PMW3901MB_REG_DELTA_X_H, (uint8_t *)&cmd, 1);             /* get command */
+    if (res != 0)                                                                                /* check result */
     {
         handle->debug_print("pmw3901mb: get command failed.\n");                                 /* get command failed */
        
         return 1;                                                                                /* return error */
     }
-    res = _pmw3901mb_spi_read(handle, PMW3901MB_REG_DELTA_Y_L, (uint8_t *)&cmd, 1);              /* get command */
-    if (res)                                                                                     /* check result */
+    res = a_pmw3901mb_spi_read(handle, PMW3901MB_REG_DELTA_Y_L, (uint8_t *)&cmd, 1);             /* get command */
+    if (res != 0)                                                                                /* check result */
     {
         handle->debug_print("pmw3901mb: get command failed.\n");                                 /* get command failed */
        
         return 1;                                                                                /* return error */
     }
-    res = _pmw3901mb_spi_read(handle, PMW3901MB_REG_DELTA_Y_H, (uint8_t *)&cmd, 1);              /* get command */
-    if (res)                                                                                     /* check result */
+    res = a_pmw3901mb_spi_read(handle, PMW3901MB_REG_DELTA_Y_H, (uint8_t *)&cmd, 1);             /* get command */
+    if (res != 0)                                                                                /* check result */
     {
         handle->debug_print("pmw3901mb: get command failed.\n");                                 /* get command failed */
        
@@ -392,7 +397,7 @@ uint8_t pmw3901mb_power_up(pmw3901mb_handle_t *handle)
  */
 uint8_t pmw3901mb_burst_read(pmw3901mb_handle_t *handle, pmw3901mb_motion_t *motion)
 {
-    volatile uint8_t res;
+    uint8_t res;
     
     if (handle == NULL)                                                                               /* check handle */
     {
@@ -403,14 +408,14 @@ uint8_t pmw3901mb_burst_read(pmw3901mb_handle_t *handle, pmw3901mb_motion_t *mot
         return 3;                                                                                     /* return error */
     }
     
-    res = _pmw3901mb_spi_read(handle, PMW3901MB_REG_MOTION_BURST, (uint8_t *)motion->raw, 12);        /* burst read */
-    if (res)                                                                                          /* check result */
+    res = a_pmw3901mb_spi_read(handle, PMW3901MB_REG_MOTION_BURST, (uint8_t *)motion->raw, 12);       /* burst read */
+    if (res != 0)                                                                                     /* check result */
     {
         handle->debug_print("pmw3901mb: burst read failed.\n");                                       /* burst read failed */
        
         return 1;                                                                                     /* return error */
     }
-    if (motion->raw[0] & (1 << 7))                                                                    /* check motion flag */
+    if ((motion->raw[0] & (1 << 7)) != 0)                                                             /* check motion flag */
     {
         if ((motion->raw[6] < 0x19) || (motion->raw[10] == 0x1F))                                     /* check data */
         {
@@ -449,8 +454,8 @@ uint8_t pmw3901mb_burst_read(pmw3901mb_handle_t *handle, pmw3901mb_motion_t *mot
  */
 uint8_t pmw3901mb_start_frame_capture(pmw3901mb_handle_t *handle)
 {
-    volatile uint8_t res;
-    volatile uint8_t cmd;
+    uint8_t res;
+    uint8_t cmd;
     
     if (handle == NULL)                                                      /* check handle */
     {
@@ -462,72 +467,72 @@ uint8_t pmw3901mb_start_frame_capture(pmw3901mb_handle_t *handle)
     }
     
     cmd = 0x07;                                                              /* set the command */
-    res = _pmw3901mb_spi_write(handle, 0x7F, (uint8_t *)&cmd, 1);            /* sent the command */
-    if (res)                                                                 /* check result */
+    res = a_pmw3901mb_spi_write(handle, 0x7F, (uint8_t *)&cmd, 1);           /* sent the command */
+    if (res != 0)                                                            /* check result */
     {
         handle->debug_print("pmw3901mb: sent the command failed.\n");        /* sent the command failed */
        
         return 1;                                                            /* return error */
     }
     cmd = 0x1D;                                                              /* set the command */
-    res = _pmw3901mb_spi_write(handle, 0x41, (uint8_t *)&cmd, 1);            /* sent the command */
-    if (res)                                                                 /* check result */
+    res = a_pmw3901mb_spi_write(handle, 0x41, (uint8_t *)&cmd, 1);           /* sent the command */
+    if (res != 0)                                                            /* check result */
     {
         handle->debug_print("pmw3901mb: sent the command failed.\n");        /* sent the command failed */
        
         return 1;                                                            /* return error */
     }
     cmd = 0x00;                                                              /* set the command */
-    res = _pmw3901mb_spi_write(handle, 0x4C, (uint8_t *)&cmd, 1);            /* sent the command */
-    if (res)                                                                 /* check result */
+    res = a_pmw3901mb_spi_write(handle, 0x4C, (uint8_t *)&cmd, 1);           /* sent the command */
+    if (res != 0)                                                            /* check result */
     {
         handle->debug_print("pmw3901mb: sent the command failed.\n");        /* sent the command failed */
        
         return 1;                                                            /* return error */
     }
     cmd = 0x08;                                                              /* set the command */
-    res = _pmw3901mb_spi_write(handle, 0x7F, (uint8_t *)&cmd, 1);            /* sent the command */
-    if (res)                                                                 /* check result */
+    res = a_pmw3901mb_spi_write(handle, 0x7F, (uint8_t *)&cmd, 1);           /* sent the command */
+    if (res != 0)                                                            /* check result */
     {
         handle->debug_print("pmw3901mb: sent the command failed.\n");        /* sent the command failed */
        
         return 1;                                                            /* return error */
     }
     cmd = 0x38;                                                              /* set the command */
-    res = _pmw3901mb_spi_write(handle, 0x6A, (uint8_t *)&cmd, 1);            /* sent the command */
-    if (res)                                                                 /* check result */
+    res = a_pmw3901mb_spi_write(handle, 0x6A, (uint8_t *)&cmd, 1);           /* sent the command */
+    if (res != 0)                                                            /* check result */
     {
         handle->debug_print("pmw3901mb: sent the command failed.\n");        /* sent the command failed */
        
         return 1;                                                            /* return error */
     }
     cmd = 0x00;                                                              /* set the command */
-    res = _pmw3901mb_spi_write(handle, 0x7F, (uint8_t *)&cmd, 1);            /* sent the command */
-    if (res)                                                                 /* check result */
+    res = a_pmw3901mb_spi_write(handle, 0x7F, (uint8_t *)&cmd, 1);           /* sent the command */
+    if (res != 0)                                                            /* check result */
     {
         handle->debug_print("pmw3901mb: sent the command failed.\n");        /* sent the command failed */
        
         return 1;                                                            /* return error */
     }
     cmd = 0x04;                                                              /* set the command */
-    res = _pmw3901mb_spi_write(handle, 0x55, (uint8_t *)&cmd, 1);            /* sent the command */
-    if (res)                                                                 /* check result */
+    res = a_pmw3901mb_spi_write(handle, 0x55, (uint8_t *)&cmd, 1);           /* sent the command */
+    if (res != 0)                                                            /* check result */
     {
         handle->debug_print("pmw3901mb: sent the command failed.\n");        /* sent the command failed */
        
         return 1;                                                            /* return error */
     }
     cmd = 0x80;                                                              /* set the command */
-    res = _pmw3901mb_spi_write(handle, 0x40, (uint8_t *)&cmd, 1);            /* sent the command */
-    if (res)                                                                 /* check result */
+    res = a_pmw3901mb_spi_write(handle, 0x40, (uint8_t *)&cmd, 1);           /* sent the command */
+    if (res != 0)                                                            /* check result */
     {
         handle->debug_print("pmw3901mb: sent the command failed.\n");        /* sent the command failed */
        
         return 1;                                                            /* return error */
     }
     cmd = 0x11;                                                              /* set the command */
-    res = _pmw3901mb_spi_write(handle, 0x4D, (uint8_t *)&cmd, 1);            /* sent the command */
-    if (res)                                                                 /* check result */
+    res = a_pmw3901mb_spi_write(handle, 0x4D, (uint8_t *)&cmd, 1);           /* sent the command */
+    if (res != 0)                                                            /* check result */
     {
         handle->debug_print("pmw3901mb: sent the command failed.\n");        /* sent the command failed */
        
@@ -549,8 +554,8 @@ uint8_t pmw3901mb_start_frame_capture(pmw3901mb_handle_t *handle)
  */
 uint8_t pmw3901mb_stop_frame_capture(pmw3901mb_handle_t *handle)
 {
-    volatile uint8_t res;
-    volatile uint8_t cmd;
+    uint8_t res;
+    uint8_t cmd;
     
     if (handle == NULL)                                                      /* check handle */
     {
@@ -562,80 +567,80 @@ uint8_t pmw3901mb_stop_frame_capture(pmw3901mb_handle_t *handle)
     }
     
     cmd = 0x00;                                                              /* set the command */
-    res = _pmw3901mb_spi_write(handle, 0x7F, (uint8_t *)&cmd, 1);            /* sent the command */
-    if (res)                                                                 /* check result */
+    res = a_pmw3901mb_spi_write(handle, 0x7F, (uint8_t *)&cmd, 1);           /* sent the command */
+    if (res != 0)                                                            /* check result */
     {
         handle->debug_print("pmw3901mb: sent the command failed.\n");        /* sent the command failed */
        
         return 1;                                                            /* return error */
     }
     cmd = 0x11;                                                              /* set the command */
-    res = _pmw3901mb_spi_write(handle, 0x4D, (uint8_t *)&cmd, 1);            /* sent the command */
-    if (res)                                                                 /* check result */
+    res = a_pmw3901mb_spi_write(handle, 0x4D, (uint8_t *)&cmd, 1);           /* sent the command */
+    if (res != 0)                                                            /* check result */
     {
         handle->debug_print("pmw3901mb: sent the command failed.\n");        /* sent the command failed */
        
         return 1;                                                            /* return error */
     }
     cmd = 0x80;                                                              /* set the command */
-    res = _pmw3901mb_spi_write(handle, 0x40, (uint8_t *)&cmd, 1);            /* sent the command */
-    if (res)                                                                 /* check result */
+    res = a_pmw3901mb_spi_write(handle, 0x40, (uint8_t *)&cmd, 1);           /* sent the command */
+    if (res != 0)                                                            /* check result */
     {
         handle->debug_print("pmw3901mb: sent the command failed.\n");        /* sent the command failed */
        
         return 1;                                                            /* return error */
     }
     cmd = 0x80;                                                              /* set the command */
-    res = _pmw3901mb_spi_write(handle, 0x55, (uint8_t *)&cmd, 1);            /* sent the command */
-    if (res)                                                                 /* check result */
+    res = a_pmw3901mb_spi_write(handle, 0x55, (uint8_t *)&cmd, 1);           /* sent the command */
+    if (res != 0)                                                            /* check result */
     {
         handle->debug_print("pmw3901mb: sent the command failed.\n");        /* sent the command failed */
        
         return 1;                                                            /* return error */
     }
     cmd = 0x08;                                                              /* set the command */
-    res = _pmw3901mb_spi_write(handle, 0x7F, (uint8_t *)&cmd, 1);            /* sent the command */
-    if (res)                                                                 /* check result */
+    res = a_pmw3901mb_spi_write(handle, 0x7F, (uint8_t *)&cmd, 1);           /* sent the command */
+    if (res != 0)                                                            /* check result */
     {
         handle->debug_print("pmw3901mb: sent the command failed.\n");        /* sent the command failed */
        
         return 1;                                                            /* return error */
     }
     cmd = 0x18;                                                              /* set the command */
-    res = _pmw3901mb_spi_write(handle, 0x6A, (uint8_t *)&cmd, 1);            /* sent the command */
-    if (res)                                                                 /* check result */
+    res = a_pmw3901mb_spi_write(handle, 0x6A, (uint8_t *)&cmd, 1);           /* sent the command */
+    if (res != 0)                                                            /* check result */
     {
         handle->debug_print("pmw3901mb: sent the command failed.\n");        /* sent the command failed */
        
         return 1;                                                            /* return error */
     }
     cmd = 0x07;                                                              /* set the command */
-    res = _pmw3901mb_spi_write(handle, 0x7F, (uint8_t *)&cmd, 1);            /* sent the command */
-    if (res)                                                                 /* check result */
+    res = a_pmw3901mb_spi_write(handle, 0x7F, (uint8_t *)&cmd, 1);           /* sent the command */
+    if (res != 0)                                                            /* check result */
     {
         handle->debug_print("pmw3901mb: sent the command failed.\n");        /* sent the command failed */
        
         return 1;                                                            /* return error */
     }
     cmd = 0x0D;                                                              /* set the command */
-    res = _pmw3901mb_spi_write(handle, 0x41, (uint8_t *)&cmd, 1);            /* sent the command */
-    if (res)                                                                 /* check result */
+    res = a_pmw3901mb_spi_write(handle, 0x41, (uint8_t *)&cmd, 1);           /* sent the command */
+    if (res != 0)                                                            /* check result */
     {
         handle->debug_print("pmw3901mb: sent the command failed.\n");        /* sent the command failed */
        
         return 1;                                                            /* return error */
     }
     cmd = 0x80;                                                              /* set the command */
-    res = _pmw3901mb_spi_write(handle, 0x4C, (uint8_t *)&cmd, 1);            /* sent the command */
-    if (res)                                                                 /* check result */
+    res = a_pmw3901mb_spi_write(handle, 0x4C, (uint8_t *)&cmd, 1);           /* sent the command */
+    if (res != 0)                                                            /* check result */
     {
         handle->debug_print("pmw3901mb: sent the command failed.\n");        /* sent the command failed */
        
         return 1;                                                            /* return error */
     }
     cmd = 0x00;                                                              /* set the command */
-    res = _pmw3901mb_spi_write(handle, 0x7F, (uint8_t *)&cmd, 1);            /* sent the command */
-    if (res)                                                                 /* check result */
+    res = a_pmw3901mb_spi_write(handle, 0x7F, (uint8_t *)&cmd, 1);           /* sent the command */
+    if (res != 0)                                                            /* check result */
     {
         handle->debug_print("pmw3901mb: sent the command failed.\n");        /* sent the command failed */
        
@@ -662,10 +667,10 @@ uint8_t pmw3901mb_stop_frame_capture(pmw3901mb_handle_t *handle)
  */
 uint8_t pmw3901mb_get_frame(pmw3901mb_handle_t *handle, uint8_t frame[35][35])
 {
-    volatile uint8_t res;
-    volatile uint8_t cmd;
-    volatile uint8_t i, j;
-    volatile uint32_t retry_times;
+    uint8_t res;
+    uint8_t cmd;
+    uint8_t i, j;
+    uint32_t retry_times;
     
     if (handle == NULL)                                                                                    /* check handle */
     {
@@ -677,16 +682,16 @@ uint8_t pmw3901mb_get_frame(pmw3901mb_handle_t *handle, uint8_t frame[35][35])
     }
     
     cmd = 0x00;                                                                                            /* set the command */
-    res = _pmw3901mb_spi_write(handle, 0x70, (uint8_t *)&cmd, 1);                                          /* sent the command */
-    if (res)                                                                                               /* check result */
+    res = a_pmw3901mb_spi_write(handle, 0x70, (uint8_t *)&cmd, 1);                                         /* sent the command */
+    if (res != 0)                                                                                          /* check result */
     {
         handle->debug_print("pmw3901mb: sent the command failed.\n");                                      /* sent the command failed */
        
         return 1;                                                                                          /* return error */
     }
     cmd = 0xFF;                                                                                            /* set the command */
-    res = _pmw3901mb_spi_write(handle, 0x58, (uint8_t *)&cmd, 1);                                          /* sent the command */
-    if (res)                                                                                               /* check result */
+    res = a_pmw3901mb_spi_write(handle, 0x58, (uint8_t *)&cmd, 1);                                         /* sent the command */
+    if (res != 0)                                                                                          /* check result */
     {
         handle->debug_print("pmw3901mb: sent the command failed.\n");                                      /* sent the command failed */
        
@@ -697,8 +702,8 @@ uint8_t pmw3901mb_get_frame(pmw3901mb_handle_t *handle, uint8_t frame[35][35])
     
     start:
     
-    res = _pmw3901mb_spi_read(handle, PMW3901MB_REG_RAW_DATA_GRAB_STATUS, (uint8_t *)&cmd, 1);             /* read grab status */
-    if (res)                                                                                               /* check result */
+    res = a_pmw3901mb_spi_read(handle, PMW3901MB_REG_RAW_DATA_GRAB_STATUS, (uint8_t *)&cmd, 1);            /* read grab status */
+    if (res != 0)                                                                                          /* check result */
     {
         handle->debug_print("pmw3901mb: read grab status failed.\n");                                      /* read grab status failed */
        
@@ -714,14 +719,14 @@ uint8_t pmw3901mb_get_frame(pmw3901mb_handle_t *handle, uint8_t frame[35][35])
                 
                 step1:
                 
-                res = _pmw3901mb_spi_read(handle, PMW3901MB_REG_RAW_DATA_GRAB, (uint8_t *)&cmd, 1);        /* read grab data */
-                if (res)                                                                                   /* check result */
+                res = a_pmw3901mb_spi_read(handle, PMW3901MB_REG_RAW_DATA_GRAB, (uint8_t *)&cmd, 1);       /* read grab data */
+                if (res != 0)                                                                              /* check result */
                 {
                     handle->debug_print("pmw3901mb: read grab data failed.\n");                            /* read grab data failed */
                    
                     return 1;                                                                              /* return error */
                 }
-                if (cmd & (1 << 6))                                                                        /* check flag */
+                if ((cmd & (1 << 6)) != 0)                                                                 /* check flag */
                 {
                     frame[i][j] = 0;                                                                       /* set 0 */
                     frame[i][j] |= (cmd & 0x3F) << 2;                                                      /* upper 6 bits */
@@ -729,7 +734,7 @@ uint8_t pmw3901mb_get_frame(pmw3901mb_handle_t *handle, uint8_t frame[35][35])
                 else
                 {
                     retry_times--;                                                                         /* retry times-- */
-                    if (retry_times)                                                                       /* check retry times */
+                    if (retry_times != 0)                                                                  /* check retry times */
                     {
                         handle->delay_ms(10);                                                              /* delay 10 ms */
                         
@@ -746,14 +751,14 @@ uint8_t pmw3901mb_get_frame(pmw3901mb_handle_t *handle, uint8_t frame[35][35])
                 
                 step2:
                 
-                res = _pmw3901mb_spi_read(handle, PMW3901MB_REG_RAW_DATA_GRAB, (uint8_t *)&cmd, 1);        /* read grab data */
-                if (res)                                                                                   /* check result */
+                res = a_pmw3901mb_spi_read(handle, PMW3901MB_REG_RAW_DATA_GRAB, (uint8_t *)&cmd, 1);       /* read grab data */
+                if (res != 0)                                                                              /* check result */
                 {
                     handle->debug_print("pmw3901mb: read grab data failed.\n");                            /* read grab data failed */
                    
                     return 1;                                                                              /* return error */
                 }
-                if (cmd & (2 << 6))                                                                        /* check flag */
+                if ((cmd & (2 << 6)) != 0)                                                                 /* check flag */
                 {
                     cmd = (cmd >> 2) & 0x3;                                                                /* get 2 bits */
                     frame[i][j] = frame[i][j] | cmd;                                                       /* set the frame */
@@ -761,7 +766,7 @@ uint8_t pmw3901mb_get_frame(pmw3901mb_handle_t *handle, uint8_t frame[35][35])
                 else
                 {
                     retry_times--;                                                                         /* retry times-- */
-                    if (retry_times)                                                                       /* check retry times */
+                    if (retry_times != 0)                                                                  /* check retry times */
                     {
                         handle->delay_ms(10);                                                              /* delay 10 ms */
                         
@@ -782,7 +787,7 @@ uint8_t pmw3901mb_get_frame(pmw3901mb_handle_t *handle, uint8_t frame[35][35])
     else
     {
         retry_times--;                                                                                     /* retry times-- */
-        if (retry_times)
+        if (retry_times != 0)
         {
             handle->delay_ms(10);                                                                          /* delay 10 ms */
             
@@ -809,9 +814,9 @@ uint8_t pmw3901mb_get_frame(pmw3901mb_handle_t *handle, uint8_t frame[35][35])
  */
 uint8_t pmw3901mb_set_optimum_performace(pmw3901mb_handle_t *handle)
 {
-    volatile uint8_t res;
-    volatile uint8_t cmd;
-    volatile uint8_t retry_times;
+    uint8_t res;
+    uint8_t cmd;
+    uint8_t retry_times;
     
     if (handle == NULL)                                                      /* check handle */
     {
@@ -823,32 +828,32 @@ uint8_t pmw3901mb_set_optimum_performace(pmw3901mb_handle_t *handle)
     }
     
     cmd = 0x00;                                                              /* set the command */
-    res = _pmw3901mb_spi_write(handle, 0x7F, (uint8_t *)&cmd, 1);            /* sent the command */
-    if (res)                                                                 /* check result */
+    res = a_pmw3901mb_spi_write(handle, 0x7F, (uint8_t *)&cmd, 1);           /* sent the command */
+    if (res != 0)                                                            /* check result */
     {
         handle->debug_print("pmw3901mb: sent the command failed.\n");        /* sent the command failed */
        
         return 1;                                                            /* return error */
     }
     cmd = 0x01;                                                              /* set the command */
-    res = _pmw3901mb_spi_write(handle, 0x55, (uint8_t *)&cmd, 1);            /* sent the command */
-    if (res)                                                                 /* check result */
+    res = a_pmw3901mb_spi_write(handle, 0x55, (uint8_t *)&cmd, 1);           /* sent the command */
+    if (res != 0)                                                            /* check result */
     {
         handle->debug_print("pmw3901mb: sent the command failed.\n");        /* sent the command failed */
        
         return 1;                                                            /* return error */
     }
     cmd = 0x07;                                                              /* set the command */
-    res = _pmw3901mb_spi_write(handle, 0x50, (uint8_t *)&cmd, 1);            /* sent the command */
-    if (res)                                                                 /* check result */
+    res = a_pmw3901mb_spi_write(handle, 0x50, (uint8_t *)&cmd, 1);           /* sent the command */
+    if (res != 0)                                                            /* check result */
     {
         handle->debug_print("pmw3901mb: sent the command failed.\n");        /* sent the command failed */
        
         return 1;                                                            /* return error */
     }
     cmd = 0x0E;                                                              /* set the command */
-    res = _pmw3901mb_spi_write(handle, 0x7F, (uint8_t *)&cmd, 1);            /* sent the command */
-    if (res)                                                                 /* check result */
+    res = a_pmw3901mb_spi_write(handle, 0x7F, (uint8_t *)&cmd, 1);           /* sent the command */
+    if (res != 0)                                                            /* check result */
     {
         handle->debug_print("pmw3901mb: sent the command failed.\n");        /* sent the command failed */
        
@@ -860,15 +865,15 @@ uint8_t pmw3901mb_set_optimum_performace(pmw3901mb_handle_t *handle)
     start:
     
     cmd = 0x10;                                                              /* set the command */
-    res = _pmw3901mb_spi_write(handle, 0x43, (uint8_t *)&cmd, 1);            /* sent the command */
-    if (res)                                                                 /* check result */
+    res = a_pmw3901mb_spi_write(handle, 0x43, (uint8_t *)&cmd, 1);           /* sent the command */
+    if (res != 0)                                                            /* check result */
     {
         handle->debug_print("pmw3901mb: sent the command failed.\n");        /* sent the command failed */
        
         return 1;                                                            /* return error */
     }
-    res = _pmw3901mb_spi_read(handle, 0x47, (uint8_t *)&cmd, 1);             /* read */
-    if (res)                                                                 /* check result */
+    res = a_pmw3901mb_spi_read(handle, 0x47, (uint8_t *)&cmd, 1);            /* read */
+    if (res != 0)                                                            /* check result */
     {
         handle->debug_print("pmw3901mb: read failed.\n");                    /* read failed */
        
@@ -876,7 +881,7 @@ uint8_t pmw3901mb_set_optimum_performace(pmw3901mb_handle_t *handle)
     }
     if (cmd != 0x08)                                                         /* check the result */
     {
-        if (retry_times)                                                     /* check retry times */
+        if (retry_times != 0)                                                /* check retry times */
         {
             retry_times--;                                                   /* retry times-- */
             handle->delay_ms(100);                                           /* delay 100 ms */
@@ -890,18 +895,18 @@ uint8_t pmw3901mb_set_optimum_performace(pmw3901mb_handle_t *handle)
             return 1;                                                        /* return error */
         }
     }
-    res = _pmw3901mb_spi_read(handle, 0x67, (uint8_t *)&cmd, 1);             /* read */
-    if (res)                                                                 /* check result */
+    res = a_pmw3901mb_spi_read(handle, 0x67, (uint8_t *)&cmd, 1);            /* read */
+    if (res != 0)                                                            /* check result */
     {
         handle->debug_print("pmw3901mb: read failed.\n");                    /* read failed */
        
         return 1;                                                            /* return error */
     }
-    if (cmd & (1 << 7))
+    if ((cmd & (1 << 7)) != 0)
     {
         cmd = 0x04;                                                          /* set the command */
-        res = _pmw3901mb_spi_write(handle, 0x48, (uint8_t *)&cmd, 1);        /* sent the command */
-        if (res)                                                             /* check result */
+        res = a_pmw3901mb_spi_write(handle, 0x48, (uint8_t *)&cmd, 1);       /* sent the command */
+        if (res != 0)                                                        /* check result */
         {
             handle->debug_print("pmw3901mb: sent the command failed.\n");    /* sent the command failed */
            
@@ -911,8 +916,8 @@ uint8_t pmw3901mb_set_optimum_performace(pmw3901mb_handle_t *handle)
     else
     {
         cmd = 0x02;                                                          /* set the command */
-        res = _pmw3901mb_spi_write(handle, 0x48, (uint8_t *)&cmd, 1);        /* sent the command */
-        if (res)                                                             /* check result */
+        res = a_pmw3901mb_spi_write(handle, 0x48, (uint8_t *)&cmd, 1);       /* sent the command */
+        if (res != 0)                                                        /* check result */
         {
             handle->debug_print("pmw3901mb: sent the command failed.\n");    /* sent the command failed */
            
@@ -920,47 +925,47 @@ uint8_t pmw3901mb_set_optimum_performace(pmw3901mb_handle_t *handle)
         }
     }
     cmd = 0x00;                                                              /* set the command */
-    res = _pmw3901mb_spi_write(handle, 0x7F, (uint8_t *)&cmd, 1);            /* sent the command */
-    if (res)                                                                 /* check result */
+    res = a_pmw3901mb_spi_write(handle, 0x7F, (uint8_t *)&cmd, 1);           /* sent the command */
+    if (res != 0)                                                            /* check result */
     {
         handle->debug_print("pmw3901mb: sent the command failed.\n");        /* sent the command failed */
        
         return 1;                                                            /* return error */
     }
     cmd = 0x7B;                                                              /* set the command */
-    res = _pmw3901mb_spi_write(handle, 0x51, (uint8_t *)&cmd, 1);            /* sent the command */
-    if (res)                                                                 /* check result */
+    res = a_pmw3901mb_spi_write(handle, 0x51, (uint8_t *)&cmd, 1);           /* sent the command */
+    if (res != 0)                                                            /* check result */
     {
         handle->debug_print("pmw3901mb: sent the command failed.\n");        /* sent the command failed */
        
         return 1;                                                            /* return error */
     }
     cmd = 0x00;                                                              /* set the command */
-    res = _pmw3901mb_spi_write(handle, 0x50, (uint8_t *)&cmd, 1);            /* sent the command */
-    if (res)                                                                 /* check result */
+    res = a_pmw3901mb_spi_write(handle, 0x50, (uint8_t *)&cmd, 1);           /* sent the command */
+    if (res != 0)                                                            /* check result */
     {
         handle->debug_print("pmw3901mb: sent the command failed.\n");        /* sent the command failed */
        
         return 1;                                                            /* return error */
     }
     cmd = 0x00;                                                              /* set the command */
-    res = _pmw3901mb_spi_write(handle, 0x55, (uint8_t *)&cmd, 1);            /* sent the command */
-    if (res)                                                                 /* check result */
+    res = a_pmw3901mb_spi_write(handle, 0x55, (uint8_t *)&cmd, 1);           /* sent the command */
+    if (res != 0)                                                            /* check result */
     {
         handle->debug_print("pmw3901mb: sent the command failed.\n");        /* sent the command failed */
        
         return 1;                                                            /* return error */
     }
     cmd = 0x0E;                                                              /* set the command */
-    res = _pmw3901mb_spi_write(handle, 0x7F, (uint8_t *)&cmd, 1);            /* sent the command */
-    if (res)                                                                 /* check result */
+    res = a_pmw3901mb_spi_write(handle, 0x7F, (uint8_t *)&cmd, 1);           /* sent the command */
+    if (res != 0)                                                            /* check result */
     {
         handle->debug_print("pmw3901mb: sent the command failed.\n");        /* sent the command failed */
        
         return 1;                                                            /* return error */
     }
-    res = _pmw3901mb_spi_read(handle, 0x73, (uint8_t *)&cmd, 1);             /* read */
-    if (res)                                                                 /* check result */
+    res = a_pmw3901mb_spi_read(handle, 0x73, (uint8_t *)&cmd, 1);            /* read */
+    if (res != 0)                                                            /* check result */
     {
         handle->debug_print("pmw3901mb: read failed.\n");                    /* read failed */
        
@@ -968,11 +973,11 @@ uint8_t pmw3901mb_set_optimum_performace(pmw3901mb_handle_t *handle)
     }
     if (cmd == 0x00)                                                         /* check status */
     {
-        volatile uint8_t c1;
-        volatile uint8_t c2;
+        uint8_t c1;
+        uint8_t c2;
         
-        res = _pmw3901mb_spi_read(handle, 0x70, (uint8_t *)&c1, 1);          /* read */
-        if (res)                                                             /* check result */
+        res = a_pmw3901mb_spi_read(handle, 0x70, (uint8_t *)&c1, 1);         /* read */
+        if (res != 0)                                                        /* check result */
         {
             handle->debug_print("pmw3901mb: read failed.\n");                /* read failed */
            
@@ -990,8 +995,8 @@ uint8_t pmw3901mb_set_optimum_performace(pmw3901mb_handle_t *handle)
         {
             c1 = 0x3F;                                                       /* max 0x3F */
         }
-        res = _pmw3901mb_spi_read(handle, 0x71, (uint8_t *)&c2, 1);          /* read */
-        if (res)                                                             /* check result */
+        res = a_pmw3901mb_spi_read(handle, 0x71, (uint8_t *)&c2, 1);         /* read */
+        if (res != 0)                                                        /* check result */
         {
             handle->debug_print("pmw3901mb: read failed.\n");                /* read failed */
            
@@ -999,48 +1004,48 @@ uint8_t pmw3901mb_set_optimum_performace(pmw3901mb_handle_t *handle)
         }
         c2 = (uint8_t)(((uint32_t)c2 * 45) / 100);                           /* get c2 */
         cmd = 0x00;                                                          /* set the command */
-        res = _pmw3901mb_spi_write(handle, 0x7F, (uint8_t *)&cmd, 1);        /* sent the command */
-        if (res)                                                             /* check result */
+        res = a_pmw3901mb_spi_write(handle, 0x7F, (uint8_t *)&cmd, 1);       /* sent the command */
+        if (res != 0)                                                        /* check result */
         {
             handle->debug_print("pmw3901mb: sent the command failed.\n");    /* sent the command failed */
            
             return 1;                                                        /* return error */
         }
         cmd = 0xAD;                                                          /* set the command */
-        res = _pmw3901mb_spi_write(handle, 0x61, (uint8_t *)&cmd, 1);        /* sent the command */
-        if (res)                                                             /* check result */
+        res = a_pmw3901mb_spi_write(handle, 0x61, (uint8_t *)&cmd, 1);       /* sent the command */
+        if (res != 0)                                                        /* check result */
         {
             handle->debug_print("pmw3901mb: sent the command failed.\n");    /* sent the command failed */
            
             return 1;                                                        /* return error */
         }
         cmd = 0x70;                                                          /* set the command */
-        res = _pmw3901mb_spi_write(handle, 0x51, (uint8_t *)&cmd, 1);        /* sent the command */
-        if (res)                                                             /* check result */
+        res = a_pmw3901mb_spi_write(handle, 0x51, (uint8_t *)&cmd, 1);       /* sent the command */
+        if (res != 0)                                                        /* check result */
         {
             handle->debug_print("pmw3901mb: sent the command failed.\n");    /* sent the command failed */
            
             return 1;                                                        /* return error */
         }
         cmd = 0x0E;                                                          /* set the command */
-        res = _pmw3901mb_spi_write(handle, 0x7F, (uint8_t *)&cmd, 1);        /* sent the command */
-        if (res)                                                             /* check result */
+        res = a_pmw3901mb_spi_write(handle, 0x7F, (uint8_t *)&cmd, 1);       /* sent the command */
+        if (res != 0)                                                        /* check result */
         {
             handle->debug_print("pmw3901mb: sent the command failed.\n");    /* sent the command failed */
            
             return 1;                                                        /* return error */
         }
         cmd = c1;                                                            /* set the command */
-        res = _pmw3901mb_spi_write(handle, 0x70, (uint8_t *)&cmd, 1);        /* sent the command */
-        if (res)                                                             /* check result */
+        res = a_pmw3901mb_spi_write(handle, 0x70, (uint8_t *)&cmd, 1);       /* sent the command */
+        if (res != 0)                                                        /* check result */
         {
             handle->debug_print("pmw3901mb: sent the command failed.\n");    /* sent the command failed */
            
             return 1;                                                        /* return error */
         }
         cmd = c2;                                                            /* set the command */
-        res = _pmw3901mb_spi_write(handle, 0x71, (uint8_t *)&cmd, 1);        /* sent the command */
-        if (res)                                                             /* check result */
+        res = a_pmw3901mb_spi_write(handle, 0x71, (uint8_t *)&cmd, 1);       /* sent the command */
+        if (res != 0)                                                        /* check result */
         {
             handle->debug_print("pmw3901mb: sent the command failed.\n");    /* sent the command failed */
            
@@ -1049,472 +1054,472 @@ uint8_t pmw3901mb_set_optimum_performace(pmw3901mb_handle_t *handle)
     }
     
     cmd = 0x00;                                                              /* set the command */
-    res = _pmw3901mb_spi_write(handle, 0x7F, (uint8_t *)&cmd, 1);            /* sent the command */
-    if (res)                                                                 /* check result */
+    res = a_pmw3901mb_spi_write(handle, 0x7F, (uint8_t *)&cmd, 1);           /* sent the command */
+    if (res != 0)                                                            /* check result */
     {
         handle->debug_print("pmw3901mb: sent the command failed.\n");        /* sent the command failed */
        
         return 1;                                                            /* return error */
     }
     cmd = 0xAD;                                                              /* set the command */
-    res = _pmw3901mb_spi_write(handle, 0x61, (uint8_t *)&cmd, 1);            /* sent the command */
-    if (res)                                                                 /* check result */
+    res = a_pmw3901mb_spi_write(handle, 0x61, (uint8_t *)&cmd, 1);           /* sent the command */
+    if (res != 0)                                                            /* check result */
     {
         handle->debug_print("pmw3901mb: sent the command failed.\n");        /* sent the command failed */
        
         return 1;                                                            /* return error */
     }
     cmd = 0x03;                                                              /* set the command */
-    res = _pmw3901mb_spi_write(handle, 0x7F, (uint8_t *)&cmd, 1);            /* sent the command */
-    if (res)                                                                 /* check result */
+    res = a_pmw3901mb_spi_write(handle, 0x7F, (uint8_t *)&cmd, 1);           /* sent the command */
+    if (res != 0)                                                            /* check result */
     {
         handle->debug_print("pmw3901mb: sent the command failed.\n");        /* sent the command failed */
        
         return 1;                                                            /* return error */
     }
     cmd = 0x00;                                                              /* set the command */
-    res = _pmw3901mb_spi_write(handle, 0x40, (uint8_t *)&cmd, 1);            /* sent the command */
-    if (res)                                                                 /* check result */
+    res = a_pmw3901mb_spi_write(handle, 0x40, (uint8_t *)&cmd, 1);           /* sent the command */
+    if (res != 0)                                                            /* check result */
     {
         handle->debug_print("pmw3901mb: sent the command failed.\n");        /* sent the command failed */
        
         return 1;                                                            /* return error */
     }
     cmd = 0x05;                                                              /* set the command */
-    res = _pmw3901mb_spi_write(handle, 0x7F, (uint8_t *)&cmd, 1);            /* sent the command */
-    if (res)                                                                 /* check result */
+    res = a_pmw3901mb_spi_write(handle, 0x7F, (uint8_t *)&cmd, 1);           /* sent the command */
+    if (res != 0)                                                            /* check result */
     {
         handle->debug_print("pmw3901mb: sent the command failed.\n");        /* sent the command failed */
        
         return 1;                                                            /* return error */
     }
     cmd = 0xB3;                                                              /* set the command */
-    res = _pmw3901mb_spi_write(handle, 0x41, (uint8_t *)&cmd, 1);            /* sent the command */
-    if (res)                                                                 /* check result */
+    res = a_pmw3901mb_spi_write(handle, 0x41, (uint8_t *)&cmd, 1);           /* sent the command */
+    if (res != 0)                                                            /* check result */
     {
         handle->debug_print("pmw3901mb: sent the command failed.\n");        /* sent the command failed */
        
         return 1;                                                            /* return error */
     }
     cmd = 0xF1;                                                              /* set the command */
-    res = _pmw3901mb_spi_write(handle, 0x43, (uint8_t *)&cmd, 1);            /* sent the command */
-    if (res)                                                                 /* check result */
+    res = a_pmw3901mb_spi_write(handle, 0x43, (uint8_t *)&cmd, 1);           /* sent the command */
+    if (res != 0)                                                            /* check result */
     {
         handle->debug_print("pmw3901mb: sent the command failed.\n");        /* sent the command failed */
        
         return 1;                                                            /* return error */
     }
     cmd = 0x14;                                                              /* set the command */
-    res = _pmw3901mb_spi_write(handle, 0x45, (uint8_t *)&cmd, 1);            /* sent the command */
-    if (res)                                                                 /* check result */
+    res = a_pmw3901mb_spi_write(handle, 0x45, (uint8_t *)&cmd, 1);           /* sent the command */
+    if (res != 0)                                                            /* check result */
     {
         handle->debug_print("pmw3901mb: sent the command failed.\n");        /* sent the command failed */
        
         return 1;                                                            /* return error */
     }
     cmd = 0x32;                                                              /* set the command */
-    res = _pmw3901mb_spi_write(handle, 0x5B, (uint8_t *)&cmd, 1);            /* sent the command */
-    if (res)                                                                 /* check result */
+    res = a_pmw3901mb_spi_write(handle, 0x5B, (uint8_t *)&cmd, 1);           /* sent the command */
+    if (res != 0)                                                            /* check result */
     {
         handle->debug_print("pmw3901mb: sent the command failed.\n");        /* sent the command failed */
        
         return 1;                                                            /* return error */
     }
     cmd = 0x34;                                                              /* set the command */
-    res = _pmw3901mb_spi_write(handle, 0x5F, (uint8_t *)&cmd, 1);            /* sent the command */
-    if (res)                                                                 /* check result */
+    res = a_pmw3901mb_spi_write(handle, 0x5F, (uint8_t *)&cmd, 1);           /* sent the command */
+    if (res != 0)                                                            /* check result */
     {
         handle->debug_print("pmw3901mb: sent the command failed.\n");        /* sent the command failed */
        
         return 1;                                                            /* return error */
     }
     cmd = 0x08;                                                              /* set the command */
-    res = _pmw3901mb_spi_write(handle, 0x7B, (uint8_t *)&cmd, 1);            /* sent the command */
-    if (res)                                                                 /* check result */
+    res = a_pmw3901mb_spi_write(handle, 0x7B, (uint8_t *)&cmd, 1);           /* sent the command */
+    if (res != 0)                                                            /* check result */
     {
         handle->debug_print("pmw3901mb: sent the command failed.\n");        /* sent the command failed */
        
         return 1;                                                            /* return error */
     }
     cmd = 0x06;                                                              /* set the command */
-    res = _pmw3901mb_spi_write(handle, 0x7F, (uint8_t *)&cmd, 1);            /* sent the command */
-    if (res)                                                                 /* check result */
+    res = a_pmw3901mb_spi_write(handle, 0x7F, (uint8_t *)&cmd, 1);           /* sent the command */
+    if (res != 0)                                                            /* check result */
     {
         handle->debug_print("pmw3901mb: sent the command failed.\n");        /* sent the command failed */
        
         return 1;                                                            /* return error */
     }
     cmd = 0x1B;                                                              /* set the command */
-    res = _pmw3901mb_spi_write(handle, 0x44, (uint8_t *)&cmd, 1);            /* sent the command */
-    if (res)                                                                 /* check result */
+    res = a_pmw3901mb_spi_write(handle, 0x44, (uint8_t *)&cmd, 1);           /* sent the command */
+    if (res != 0)                                                            /* check result */
     {
         handle->debug_print("pmw3901mb: sent the command failed.\n");        /* sent the command failed */
        
         return 1;                                                            /* return error */
     }
     cmd = 0xBF;                                                              /* set the command */
-    res = _pmw3901mb_spi_write(handle, 0x40, (uint8_t *)&cmd, 1);            /* sent the command */
-    if (res)                                                                 /* check result */
+    res = a_pmw3901mb_spi_write(handle, 0x40, (uint8_t *)&cmd, 1);           /* sent the command */
+    if (res != 0)                                                            /* check result */
     {
         handle->debug_print("pmw3901mb: sent the command failed.\n");        /* sent the command failed */
        
         return 1;                                                            /* return error */
     }
     cmd = 0x3F;                                                              /* set the command */
-    res = _pmw3901mb_spi_write(handle, 0x4E, (uint8_t *)&cmd, 1);            /* sent the command */
-    if (res)                                                                 /* check result */
+    res = a_pmw3901mb_spi_write(handle, 0x4E, (uint8_t *)&cmd, 1);           /* sent the command */
+    if (res != 0)                                                            /* check result */
     {
         handle->debug_print("pmw3901mb: sent the command failed.\n");        /* sent the command failed */
        
         return 1;                                                            /* return error */
     }
     cmd = 0x08;                                                              /* set the command */
-    res = _pmw3901mb_spi_write(handle, 0x7F, (uint8_t *)&cmd, 1);            /* sent the command */
-    if (res)                                                                 /* check result */
+    res = a_pmw3901mb_spi_write(handle, 0x7F, (uint8_t *)&cmd, 1);           /* sent the command */
+    if (res != 0)                                                            /* check result */
     {
         handle->debug_print("pmw3901mb: sent the command failed.\n");        /* sent the command failed */
        
         return 1;                                                            /* return error */
     }
     cmd = 0x20;                                                              /* set the command */
-    res = _pmw3901mb_spi_write(handle, 0x65, (uint8_t *)&cmd, 1);            /* sent the command */
-    if (res)                                                                 /* check result */
+    res = a_pmw3901mb_spi_write(handle, 0x65, (uint8_t *)&cmd, 1);           /* sent the command */
+    if (res != 0)                                                            /* check result */
     {
         handle->debug_print("pmw3901mb: sent the command failed.\n");        /* sent the command failed */
        
         return 1;                                                            /* return error */
     }
     cmd = 0x18;                                                              /* set the command */
-    res = _pmw3901mb_spi_write(handle, 0x6A, (uint8_t *)&cmd, 1);            /* sent the command */
-    if (res)                                                                 /* check result */
+    res = a_pmw3901mb_spi_write(handle, 0x6A, (uint8_t *)&cmd, 1);           /* sent the command */
+    if (res != 0)                                                            /* check result */
     {
         handle->debug_print("pmw3901mb: sent the command failed.\n");        /* sent the command failed */
        
         return 1;                                                            /* return error */
     }
     cmd = 0x09;                                                              /* set the command */
-    res = _pmw3901mb_spi_write(handle, 0x7F, (uint8_t *)&cmd, 1);            /* sent the command */
-    if (res)                                                                 /* check result */
+    res = a_pmw3901mb_spi_write(handle, 0x7F, (uint8_t *)&cmd, 1);           /* sent the command */
+    if (res != 0)                                                            /* check result */
     {
         handle->debug_print("pmw3901mb: sent the command failed.\n");        /* sent the command failed */
        
         return 1;                                                            /* return error */
     }
     cmd = 0xAF;                                                              /* set the command */
-    res = _pmw3901mb_spi_write(handle, 0x4F, (uint8_t *)&cmd, 1);            /* sent the command */
-    if (res)                                                                 /* check result */
+    res = a_pmw3901mb_spi_write(handle, 0x4F, (uint8_t *)&cmd, 1);           /* sent the command */
+    if (res != 0)                                                            /* check result */
     {
         handle->debug_print("pmw3901mb: sent the command failed.\n");        /* sent the command failed */
        
         return 1;                                                            /* return error */
     }
     cmd = 0x40;                                                              /* set the command */
-    res = _pmw3901mb_spi_write(handle, 0x5F, (uint8_t *)&cmd, 1);            /* sent the command */
-    if (res)                                                                 /* check result */
+    res = a_pmw3901mb_spi_write(handle, 0x5F, (uint8_t *)&cmd, 1);           /* sent the command */
+    if (res != 0)                                                            /* check result */
     {
         handle->debug_print("pmw3901mb: sent the command failed.\n");        /* sent the command failed */
        
         return 1;                                                            /* return error */
     }
     cmd = 0x80;                                                              /* set the command */
-    res = _pmw3901mb_spi_write(handle, 0x48, (uint8_t *)&cmd, 1);            /* sent the command */
-    if (res)                                                                 /* check result */
+    res = a_pmw3901mb_spi_write(handle, 0x48, (uint8_t *)&cmd, 1);           /* sent the command */
+    if (res != 0)                                                            /* check result */
     {
         handle->debug_print("pmw3901mb: sent the command failed.\n");        /* sent the command failed */
        
         return 1;                                                            /* return error */
     }
     cmd = 0x80;                                                              /* set the command */
-    res = _pmw3901mb_spi_write(handle, 0x49, (uint8_t *)&cmd, 1);            /* sent the command */
-    if (res)                                                                 /* check result */
+    res = a_pmw3901mb_spi_write(handle, 0x49, (uint8_t *)&cmd, 1);           /* sent the command */
+    if (res != 0)                                                            /* check result */
     {
         handle->debug_print("pmw3901mb: sent the command failed.\n");        /* sent the command failed */
        
         return 1;                                                            /* return error */
     }
     cmd = 0x77;                                                              /* set the command */
-    res = _pmw3901mb_spi_write(handle, 0x57, (uint8_t *)&cmd, 1);            /* sent the command */
-    if (res)                                                                 /* check result */
+    res = a_pmw3901mb_spi_write(handle, 0x57, (uint8_t *)&cmd, 1);           /* sent the command */
+    if (res != 0)                                                            /* check result */
     {
         handle->debug_print("pmw3901mb: sent the command failed.\n");        /* sent the command failed */
        
         return 1;                                                            /* return error */
     }
     cmd = 0x78;                                                              /* set the command */
-    res = _pmw3901mb_spi_write(handle, 0x60, (uint8_t *)&cmd, 1);            /* sent the command */
-    if (res)                                                                 /* check result */
+    res = a_pmw3901mb_spi_write(handle, 0x60, (uint8_t *)&cmd, 1);           /* sent the command */
+    if (res != 0)                                                            /* check result */
     {
         handle->debug_print("pmw3901mb: sent the command failed.\n");        /* sent the command failed */
        
         return 1;                                                            /* return error */
     }
     cmd = 0x78;                                                              /* set the command */
-    res = _pmw3901mb_spi_write(handle, 0x61, (uint8_t *)&cmd, 1);            /* sent the command */
-    if (res)                                                                 /* check result */
+    res = a_pmw3901mb_spi_write(handle, 0x61, (uint8_t *)&cmd, 1);           /* sent the command */
+    if (res != 0)                                                            /* check result */
     {
         handle->debug_print("pmw3901mb: sent the command failed.\n");        /* sent the command failed */
        
         return 1;                                                            /* return error */
     }
     cmd = 0x08;                                                              /* set the command */
-    res = _pmw3901mb_spi_write(handle, 0x62, (uint8_t *)&cmd, 1);            /* sent the command */
-    if (res)                                                                 /* check result */
+    res = a_pmw3901mb_spi_write(handle, 0x62, (uint8_t *)&cmd, 1);           /* sent the command */
+    if (res != 0)                                                            /* check result */
     {
         handle->debug_print("pmw3901mb: sent the command failed.\n");        /* sent the command failed */
        
         return 1;                                                            /* return error */
     }
     cmd = 0x50;                                                              /* set the command */
-    res = _pmw3901mb_spi_write(handle, 0x63, (uint8_t *)&cmd, 1);            /* sent the command */
-    if (res)                                                                 /* check result */
+    res = a_pmw3901mb_spi_write(handle, 0x63, (uint8_t *)&cmd, 1);           /* sent the command */
+    if (res != 0)                                                            /* check result */
     {
         handle->debug_print("pmw3901mb: sent the command failed.\n");        /* sent the command failed */
        
         return 1;                                                            /* return error */
     }
     cmd = 0x0A;                                                              /* set the command */
-    res = _pmw3901mb_spi_write(handle, 0x7F, (uint8_t *)&cmd, 1);            /* sent the command */
-    if (res)                                                                 /* check result */
+    res = a_pmw3901mb_spi_write(handle, 0x7F, (uint8_t *)&cmd, 1);           /* sent the command */
+    if (res != 0)                                                            /* check result */
     {
         handle->debug_print("pmw3901mb: sent the command failed.\n");        /* sent the command failed */
        
         return 1;                                                            /* return error */
     }
     cmd = 0x60;                                                              /* set the command */
-    res = _pmw3901mb_spi_write(handle, 0x45, (uint8_t *)&cmd, 1);            /* sent the command */
-    if (res)                                                                 /* check result */
+    res = a_pmw3901mb_spi_write(handle, 0x45, (uint8_t *)&cmd, 1);           /* sent the command */
+    if (res != 0)                                                            /* check result */
     {
         handle->debug_print("pmw3901mb: sent the command failed.\n");        /* sent the command failed */
        
         return 1;                                                            /* return error */
     }
     cmd = 0x00;                                                              /* set the command */
-    res = _pmw3901mb_spi_write(handle, 0x7F, (uint8_t *)&cmd, 1);            /* sent the command */
-    if (res)                                                                 /* check result */
+    res = a_pmw3901mb_spi_write(handle, 0x7F, (uint8_t *)&cmd, 1);           /* sent the command */
+    if (res != 0)                                                            /* check result */
     {
         handle->debug_print("pmw3901mb: sent the command failed.\n");        /* sent the command failed */
        
         return 1;                                                            /* return error */
     }
     cmd = 0x11;                                                              /* set the command */
-    res = _pmw3901mb_spi_write(handle, 0x4D, (uint8_t *)&cmd, 1);            /* sent the command */
-    if (res)                                                                 /* check result */
+    res = a_pmw3901mb_spi_write(handle, 0x4D, (uint8_t *)&cmd, 1);           /* sent the command */
+    if (res != 0)                                                            /* check result */
     {
         handle->debug_print("pmw3901mb: sent the command failed.\n");        /* sent the command failed */
        
         return 1;                                                            /* return error */
     }
     cmd = 0x80;                                                              /* set the command */
-    res = _pmw3901mb_spi_write(handle, 0x55, (uint8_t *)&cmd, 1);            /* sent the command */
-    if (res)                                                                 /* check result */
+    res = a_pmw3901mb_spi_write(handle, 0x55, (uint8_t *)&cmd, 1);           /* sent the command */
+    if (res != 0)                                                            /* check result */
     {
         handle->debug_print("pmw3901mb: sent the command failed.\n");        /* sent the command failed */
        
         return 1;                                                            /* return error */
     }
     cmd = 0x1F;                                                              /* set the command */
-    res = _pmw3901mb_spi_write(handle, 0x74, (uint8_t *)&cmd, 1);            /* sent the command */
-    if (res)                                                                 /* check result */
+    res = a_pmw3901mb_spi_write(handle, 0x74, (uint8_t *)&cmd, 1);           /* sent the command */
+    if (res != 0)                                                            /* check result */
     {
         handle->debug_print("pmw3901mb: sent the command failed.\n");        /* sent the command failed */
        
         return 1;                                                            /* return error */
     }
     cmd = 0x1F;                                                              /* set the command */
-    res = _pmw3901mb_spi_write(handle, 0x75, (uint8_t *)&cmd, 1);            /* sent the command */
-    if (res)                                                                 /* check result */
+    res = a_pmw3901mb_spi_write(handle, 0x75, (uint8_t *)&cmd, 1);           /* sent the command */
+    if (res != 0)                                                            /* check result */
     {
         handle->debug_print("pmw3901mb: sent the command failed.\n");        /* sent the command failed */
        
         return 1;                                                            /* return error */
     }
     cmd = 0x78;                                                              /* set the command */
-    res = _pmw3901mb_spi_write(handle, 0x4A, (uint8_t *)&cmd, 1);            /* sent the command */
-    if (res)                                                                 /* check result */
+    res = a_pmw3901mb_spi_write(handle, 0x4A, (uint8_t *)&cmd, 1);           /* sent the command */
+    if (res != 0)                                                            /* check result */
     {
         handle->debug_print("pmw3901mb: sent the command failed.\n");        /* sent the command failed */
        
         return 1;                                                            /* return error */
     }
     cmd = 0x78;                                                              /* set the command */
-    res = _pmw3901mb_spi_write(handle, 0x4B, (uint8_t *)&cmd, 1);            /* sent the command */
-    if (res)                                                                 /* check result */
+    res = a_pmw3901mb_spi_write(handle, 0x4B, (uint8_t *)&cmd, 1);           /* sent the command */
+    if (res != 0)                                                            /* check result */
     {
         handle->debug_print("pmw3901mb: sent the command failed.\n");        /* sent the command failed */
        
         return 1;                                                            /* return error */
     }
     cmd = 0x08;                                                              /* set the command */
-    res = _pmw3901mb_spi_write(handle, 0x44, (uint8_t *)&cmd, 1);            /* sent the command */
-    if (res)                                                                 /* check result */
+    res = a_pmw3901mb_spi_write(handle, 0x44, (uint8_t *)&cmd, 1);           /* sent the command */
+    if (res != 0)                                                            /* check result */
     {
         handle->debug_print("pmw3901mb: sent the command failed.\n");        /* sent the command failed */
        
         return 1;                                                            /* return error */
     }
     cmd = 0x50;                                                              /* set the command */
-    res = _pmw3901mb_spi_write(handle, 0x45, (uint8_t *)&cmd, 1);            /* sent the command */
-    if (res)                                                                 /* check result */
+    res = a_pmw3901mb_spi_write(handle, 0x45, (uint8_t *)&cmd, 1);           /* sent the command */
+    if (res != 0)                                                            /* check result */
     {
         handle->debug_print("pmw3901mb: sent the command failed.\n");        /* sent the command failed */
        
         return 1;                                                            /* return error */
     }
     cmd = 0xFF;                                                              /* set the command */
-    res = _pmw3901mb_spi_write(handle, 0x64, (uint8_t *)&cmd, 1);            /* sent the command */
-    if (res)                                                                 /* check result */
+    res = a_pmw3901mb_spi_write(handle, 0x64, (uint8_t *)&cmd, 1);           /* sent the command */
+    if (res != 0)                                                            /* check result */
     {
         handle->debug_print("pmw3901mb: sent the command failed.\n");        /* sent the command failed */
        
         return 1;                                                            /* return error */
     }
     cmd = 0x1F;                                                              /* set the command */
-    res = _pmw3901mb_spi_write(handle, 0x65, (uint8_t *)&cmd, 1);            /* sent the command */
-    if (res)                                                                 /* check result */
+    res = a_pmw3901mb_spi_write(handle, 0x65, (uint8_t *)&cmd, 1);           /* sent the command */
+    if (res != 0)                                                            /* check result */
     {
         handle->debug_print("pmw3901mb: sent the command failed.\n");        /* sent the command failed */
        
         return 1;                                                            /* return error */
     }
     cmd = 0x14;                                                              /* set the command */
-    res = _pmw3901mb_spi_write(handle, 0x7F, (uint8_t *)&cmd, 1);            /* sent the command */
-    if (res)                                                                 /* check result */
+    res = a_pmw3901mb_spi_write(handle, 0x7F, (uint8_t *)&cmd, 1);           /* sent the command */
+    if (res != 0)                                                            /* check result */
     {
         handle->debug_print("pmw3901mb: sent the command failed.\n");        /* sent the command failed */
        
         return 1;                                                            /* return error */
     }
     cmd = 0x67;                                                              /* set the command */
-    res = _pmw3901mb_spi_write(handle, 0x65, (uint8_t *)&cmd, 1);            /* sent the command */
-    if (res)                                                                 /* check result */
+    res = a_pmw3901mb_spi_write(handle, 0x65, (uint8_t *)&cmd, 1);           /* sent the command */
+    if (res != 0)                                                            /* check result */
     {
         handle->debug_print("pmw3901mb: sent the command failed.\n");        /* sent the command failed */
        
         return 1;                                                            /* return error */
     }
     cmd = 0x08;                                                              /* set the command */
-    res = _pmw3901mb_spi_write(handle, 0x66, (uint8_t *)&cmd, 1);            /* sent the command */
-    if (res)                                                                 /* check result */
+    res = a_pmw3901mb_spi_write(handle, 0x66, (uint8_t *)&cmd, 1);           /* sent the command */
+    if (res != 0)                                                            /* check result */
     {
         handle->debug_print("pmw3901mb: sent the command failed.\n");        /* sent the command failed */
        
         return 1;                                                            /* return error */
     }
     cmd = 0x70;                                                              /* set the command */
-    res = _pmw3901mb_spi_write(handle, 0x63, (uint8_t *)&cmd, 1);            /* sent the command */
-    if (res)                                                                 /* check result */
+    res = a_pmw3901mb_spi_write(handle, 0x63, (uint8_t *)&cmd, 1);           /* sent the command */
+    if (res != 0)                                                            /* check result */
     {
         handle->debug_print("pmw3901mb: sent the command failed.\n");        /* sent the command failed */
        
         return 1;                                                            /* return error */
     }
     cmd = 0x15;                                                              /* set the command */
-    res = _pmw3901mb_spi_write(handle, 0x7F, (uint8_t *)&cmd, 1);            /* sent the command */
-    if (res)                                                                 /* check result */
+    res = a_pmw3901mb_spi_write(handle, 0x7F, (uint8_t *)&cmd, 1);           /* sent the command */
+    if (res != 0)                                                            /* check result */
     {
         handle->debug_print("pmw3901mb: sent the command failed.\n");        /* sent the command failed */
        
         return 1;                                                            /* return error */
     }
     cmd = 0x48;                                                              /* set the command */
-    res = _pmw3901mb_spi_write(handle, 0x48, (uint8_t *)&cmd, 1);            /* sent the command */
-    if (res)                                                                 /* check result */
+    res = a_pmw3901mb_spi_write(handle, 0x48, (uint8_t *)&cmd, 1);           /* sent the command */
+    if (res != 0)                                                            /* check result */
     {
         handle->debug_print("pmw3901mb: sent the command failed.\n");        /* sent the command failed */
        
         return 1;                                                            /* return error */
     }
     cmd = 0x07;                                                              /* set the command */
-    res = _pmw3901mb_spi_write(handle, 0x7F, (uint8_t *)&cmd, 1);            /* sent the command */
-    if (res)                                                                 /* check result */
+    res = a_pmw3901mb_spi_write(handle, 0x7F, (uint8_t *)&cmd, 1);           /* sent the command */
+    if (res != 0)                                                            /* check result */
     {
         handle->debug_print("pmw3901mb: sent the command failed.\n");        /* sent the command failed */
        
         return 1;                                                            /* return error */
     }
     cmd = 0x0D;                                                              /* set the command */
-    res = _pmw3901mb_spi_write(handle, 0x41, (uint8_t *)&cmd, 1);            /* sent the command */
-    if (res)                                                                 /* check result */
+    res = a_pmw3901mb_spi_write(handle, 0x41, (uint8_t *)&cmd, 1);           /* sent the command */
+    if (res != 0)                                                            /* check result */
     {
         handle->debug_print("pmw3901mb: sent the command failed.\n");        /* sent the command failed */
        
         return 1;                                                            /* return error */
     }
     cmd = 0x14;                                                              /* set the command */
-    res = _pmw3901mb_spi_write(handle, 0x43, (uint8_t *)&cmd, 1);            /* sent the command */
-    if (res)                                                                 /* check result */
+    res = a_pmw3901mb_spi_write(handle, 0x43, (uint8_t *)&cmd, 1);           /* sent the command */
+    if (res != 0)                                                            /* check result */
     {
         handle->debug_print("pmw3901mb: sent the command failed.\n");        /* sent the command failed */
        
         return 1;                                                            /* return error */
     }
     cmd = 0x0E;                                                              /* set the command */
-    res = _pmw3901mb_spi_write(handle, 0x4B, (uint8_t *)&cmd, 1);            /* sent the command */
-    if (res)                                                                 /* check result */
+    res = a_pmw3901mb_spi_write(handle, 0x4B, (uint8_t *)&cmd, 1);           /* sent the command */
+    if (res != 0)                                                            /* check result */
     {
         handle->debug_print("pmw3901mb: sent the command failed.\n");        /* sent the command failed */
        
         return 1;                                                            /* return error */
     }
     cmd = 0x0F;                                                              /* set the command */
-    res = _pmw3901mb_spi_write(handle, 0x45, (uint8_t *)&cmd, 1);            /* sent the command */
-    if (res)                                                                 /* check result */
+    res = a_pmw3901mb_spi_write(handle, 0x45, (uint8_t *)&cmd, 1);           /* sent the command */
+    if (res != 0)                                                            /* check result */
     {
         handle->debug_print("pmw3901mb: sent the command failed.\n");        /* sent the command failed */
        
         return 1;                                                            /* return error */
     }
     cmd = 0x42;                                                              /* set the command */
-    res = _pmw3901mb_spi_write(handle, 0x44, (uint8_t *)&cmd, 1);            /* sent the command */
-    if (res)                                                                 /* check result */
+    res = a_pmw3901mb_spi_write(handle, 0x44, (uint8_t *)&cmd, 1);           /* sent the command */
+    if (res != 0)                                                            /* check result */
     {
         handle->debug_print("pmw3901mb: sent the command failed.\n");        /* sent the command failed */
        
         return 1;                                                            /* return error */
     }
     cmd = 0x80;                                                              /* set the command */
-    res = _pmw3901mb_spi_write(handle, 0x4C, (uint8_t *)&cmd, 1);            /* sent the command */
-    if (res)                                                                 /* check result */
+    res = a_pmw3901mb_spi_write(handle, 0x4C, (uint8_t *)&cmd, 1);           /* sent the command */
+    if (res != 0)                                                            /* check result */
     {
         handle->debug_print("pmw3901mb: sent the command failed.\n");        /* sent the command failed */
        
         return 1;                                                            /* return error */
     }
     cmd = 0x10;                                                              /* set the command */
-    res = _pmw3901mb_spi_write(handle, 0x7F, (uint8_t *)&cmd, 1);            /* sent the command */
-    if (res)                                                                 /* check result */
+    res = a_pmw3901mb_spi_write(handle, 0x7F, (uint8_t *)&cmd, 1);           /* sent the command */
+    if (res != 0)                                                            /* check result */
     {
         handle->debug_print("pmw3901mb: sent the command failed.\n");        /* sent the command failed */
        
         return 1;                                                            /* return error */
     }
     cmd = 0x02;                                                              /* set the command */
-    res = _pmw3901mb_spi_write(handle, 0x5B, (uint8_t *)&cmd, 1);            /* sent the command */
-    if (res)                                                                 /* check result */
+    res = a_pmw3901mb_spi_write(handle, 0x5B, (uint8_t *)&cmd, 1);           /* sent the command */
+    if (res != 0)                                                            /* check result */
     {
         handle->debug_print("pmw3901mb: sent the command failed.\n");        /* sent the command failed */
        
         return 1;                                                            /* return error */
     }
     cmd = 0x07;                                                              /* set the command */
-    res = _pmw3901mb_spi_write(handle, 0x7F, (uint8_t *)&cmd, 1);            /* sent the command */
-    if (res)                                                                 /* check result */
+    res = a_pmw3901mb_spi_write(handle, 0x7F, (uint8_t *)&cmd, 1);           /* sent the command */
+    if (res != 0)                                                            /* check result */
     {
         handle->debug_print("pmw3901mb: sent the command failed.\n");        /* sent the command failed */
        
         return 1;                                                            /* return error */
     }
     cmd = 0x41;                                                              /* set the command */
-    res = _pmw3901mb_spi_write(handle, 0x40, (uint8_t *)&cmd, 1);            /* sent the command */
-    if (res)                                                                 /* check result */
+    res = a_pmw3901mb_spi_write(handle, 0x40, (uint8_t *)&cmd, 1);           /* sent the command */
+    if (res != 0)                                                            /* check result */
     {
         handle->debug_print("pmw3901mb: sent the command failed.\n");        /* sent the command failed */
        
         return 1;                                                            /* return error */
     }
     cmd = 0x00;                                                              /* set the command */
-    res = _pmw3901mb_spi_write(handle, 0x70, (uint8_t *)&cmd, 1);            /* sent the command */
-    if (res)                                                                 /* check result */
+    res = a_pmw3901mb_spi_write(handle, 0x70, (uint8_t *)&cmd, 1);           /* sent the command */
+    if (res != 0)                                                            /* check result */
     {
         handle->debug_print("pmw3901mb: sent the command failed.\n");        /* sent the command failed */
        
@@ -1522,112 +1527,112 @@ uint8_t pmw3901mb_set_optimum_performace(pmw3901mb_handle_t *handle)
     }
     handle->delay_ms(10);                                                    /* delay 10 ms */
     cmd = 0x44;                                                              /* set the command */
-    res = _pmw3901mb_spi_write(handle, 0x32, (uint8_t *)&cmd, 1);            /* sent the command */
-    if (res)                                                                 /* check result */
+    res = a_pmw3901mb_spi_write(handle, 0x32, (uint8_t *)&cmd, 1);           /* sent the command */
+    if (res != 0)                                                            /* check result */
     {
         handle->debug_print("pmw3901mb: sent the command failed.\n");        /* sent the command failed */
        
         return 1;                                                            /* return error */
     }
     cmd = 0x07;                                                              /* set the command */
-    res = _pmw3901mb_spi_write(handle, 0x7F, (uint8_t *)&cmd, 1);            /* sent the command */
-    if (res)                                                                 /* check result */
+    res = a_pmw3901mb_spi_write(handle, 0x7F, (uint8_t *)&cmd, 1);           /* sent the command */
+    if (res != 0)                                                            /* check result */
     {
         handle->debug_print("pmw3901mb: sent the command failed.\n");        /* sent the command failed */
        
         return 1;                                                            /* return error */
     }
     cmd = 0x40;                                                              /* set the command */
-    res = _pmw3901mb_spi_write(handle, 0x40, (uint8_t *)&cmd, 1);            /* sent the command */
-    if (res)                                                                 /* check result */
+    res = a_pmw3901mb_spi_write(handle, 0x40, (uint8_t *)&cmd, 1);           /* sent the command */
+    if (res != 0)                                                            /* check result */
     {
         handle->debug_print("pmw3901mb: sent the command failed.\n");        /* sent the command failed */
        
         return 1;                                                            /* return error */
     }
     cmd = 0x06;                                                              /* set the command */
-    res = _pmw3901mb_spi_write(handle, 0x7F, (uint8_t *)&cmd, 1);            /* sent the command */
-    if (res)                                                                 /* check result */
+    res = a_pmw3901mb_spi_write(handle, 0x7F, (uint8_t *)&cmd, 1);           /* sent the command */
+    if (res != 0)                                                            /* check result */
     {
         handle->debug_print("pmw3901mb: sent the command failed.\n");        /* sent the command failed */
        
         return 1;                                                            /* return error */
     }
     cmd = 0xF0;                                                              /* set the command */
-    res = _pmw3901mb_spi_write(handle, 0x62, (uint8_t *)&cmd, 1);            /* sent the command */
-    if (res)                                                                 /* check result */
+    res = a_pmw3901mb_spi_write(handle, 0x62, (uint8_t *)&cmd, 1);           /* sent the command */
+    if (res != 0)                                                            /* check result */
     {
         handle->debug_print("pmw3901mb: sent the command failed.\n");        /* sent the command failed */
        
         return 1;                                                            /* return error */
     }
     cmd = 0x00;                                                              /* set the command */
-    res = _pmw3901mb_spi_write(handle, 0x63, (uint8_t *)&cmd, 1);            /* sent the command */
-    if (res)                                                                 /* check result */
+    res = a_pmw3901mb_spi_write(handle, 0x63, (uint8_t *)&cmd, 1);           /* sent the command */
+    if (res != 0)                                                            /* check result */
     {
         handle->debug_print("pmw3901mb: sent the command failed.\n");        /* sent the command failed */
        
         return 1;                                                            /* return error */
     }
     cmd = 0x0D;                                                              /* set the command */
-    res = _pmw3901mb_spi_write(handle, 0x7F, (uint8_t *)&cmd, 1);            /* sent the command */
-    if (res)                                                                 /* check result */
+    res = a_pmw3901mb_spi_write(handle, 0x7F, (uint8_t *)&cmd, 1);           /* sent the command */
+    if (res != 0)                                                            /* check result */
     {
         handle->debug_print("pmw3901mb: sent the command failed.\n");        /* sent the command failed */
        
         return 1;                                                            /* return error */
     }
     cmd = 0xC0;                                                              /* set the command */
-    res = _pmw3901mb_spi_write(handle, 0x48, (uint8_t *)&cmd, 1);            /* sent the command */
-    if (res)                                                                 /* check result */
+    res = a_pmw3901mb_spi_write(handle, 0x48, (uint8_t *)&cmd, 1);           /* sent the command */
+    if (res != 0)                                                            /* check result */
     {
         handle->debug_print("pmw3901mb: sent the command failed.\n");        /* sent the command failed */
        
         return 1;                                                            /* return error */
     }
     cmd = 0xD5;                                                              /* set the command */
-    res = _pmw3901mb_spi_write(handle, 0x6F, (uint8_t *)&cmd, 1);            /* sent the command */
-    if (res)                                                                 /* check result */
+    res = a_pmw3901mb_spi_write(handle, 0x6F, (uint8_t *)&cmd, 1);           /* sent the command */
+    if (res != 0)                                                            /* check result */
     {
         handle->debug_print("pmw3901mb: sent the command failed.\n");        /* sent the command failed */
        
         return 1;                                                            /* return error */
     }
     cmd = 0x00;                                                              /* set the command */
-    res = _pmw3901mb_spi_write(handle, 0x7F, (uint8_t *)&cmd, 1);            /* sent the command */
-    if (res)                                                                 /* check result */
+    res = a_pmw3901mb_spi_write(handle, 0x7F, (uint8_t *)&cmd, 1);           /* sent the command */
+    if (res != 0)                                                            /* check result */
     {
         handle->debug_print("pmw3901mb: sent the command failed.\n");        /* sent the command failed */
        
         return 1;                                                            /* return error */
     }
     cmd = 0xA0;                                                              /* set the command */
-    res = _pmw3901mb_spi_write(handle, 0x5B, (uint8_t *)&cmd, 1);            /* sent the command */
-    if (res)                                                                 /* check result */
+    res = a_pmw3901mb_spi_write(handle, 0x5B, (uint8_t *)&cmd, 1);           /* sent the command */
+    if (res != 0)                                                            /* check result */
     {
         handle->debug_print("pmw3901mb: sent the command failed.\n");        /* sent the command failed */
        
         return 1;                                                            /* return error */
     }
     cmd = 0xA8;                                                              /* set the command */
-    res = _pmw3901mb_spi_write(handle, 0x4E, (uint8_t *)&cmd, 1);            /* sent the command */
-    if (res)                                                                 /* check result */
+    res = a_pmw3901mb_spi_write(handle, 0x4E, (uint8_t *)&cmd, 1);           /* sent the command */
+    if (res != 0)                                                            /* check result */
     {
         handle->debug_print("pmw3901mb: sent the command failed.\n");        /* sent the command failed */
        
         return 1;                                                            /* return error */
     }
     cmd = 0x50;                                                              /* set the command */
-    res = _pmw3901mb_spi_write(handle, 0x5A, (uint8_t *)&cmd, 1);            /* sent the command */
-    if (res)                                                                 /* check result */
+    res = a_pmw3901mb_spi_write(handle, 0x5A, (uint8_t *)&cmd, 1);           /* sent the command */
+    if (res != 0)                                                            /* check result */
     {
         handle->debug_print("pmw3901mb: sent the command failed.\n");        /* sent the command failed */
        
         return 1;                                                            /* return error */
     }
     cmd = 0x80;                                                              /* set the command */
-    res = _pmw3901mb_spi_write(handle, 0x40, (uint8_t *)&cmd, 1);            /* sent the command */
-    if (res)                                                                 /* check result */
+    res = a_pmw3901mb_spi_write(handle, 0x40, (uint8_t *)&cmd, 1);           /* sent the command */
+    if (res != 0)                                                            /* check result */
     {
         handle->debug_print("pmw3901mb: sent the command failed.\n");        /* sent the command failed */
        
@@ -1650,7 +1655,7 @@ uint8_t pmw3901mb_set_optimum_performace(pmw3901mb_handle_t *handle)
  */
 uint8_t pmw3901mb_get_product_id(pmw3901mb_handle_t *handle, uint8_t *id)
 {
-    volatile uint8_t res;
+    uint8_t res;
     
     if (handle == NULL)                                                                   /* check handle */
     {
@@ -1661,8 +1666,8 @@ uint8_t pmw3901mb_get_product_id(pmw3901mb_handle_t *handle, uint8_t *id)
         return 3;                                                                         /* return error */
     }
     
-    res = _pmw3901mb_spi_read(handle, PMW3901MB_REG_PRODUCT_ID, (uint8_t *)id, 1);        /* get product id */
-    if (res)                                                                              /* check result */
+    res = a_pmw3901mb_spi_read(handle, PMW3901MB_REG_PRODUCT_ID, (uint8_t *)id, 1);       /* get product id */
+    if (res != 0)                                                                         /* check result */
     {
         handle->debug_print("pmw3901mb: get product id failed.\n");                       /* get product id failed */
        
@@ -1685,7 +1690,7 @@ uint8_t pmw3901mb_get_product_id(pmw3901mb_handle_t *handle, uint8_t *id)
  */
 uint8_t pmw3901mb_get_inverse_product_id(pmw3901mb_handle_t *handle, uint8_t *id)
 {
-    volatile uint8_t res;
+    uint8_t res;
     
     if (handle == NULL)                                                                           /* check handle */
     {
@@ -1696,8 +1701,8 @@ uint8_t pmw3901mb_get_inverse_product_id(pmw3901mb_handle_t *handle, uint8_t *id
         return 3;                                                                                 /* return error */
     }
     
-    res = _pmw3901mb_spi_read(handle, PMW3901MB_REG_INVERSE_PRODUCT_ID, (uint8_t *)id, 1);        /* get inverse product id */
-    if (res)                                                                                      /* check result */
+    res = a_pmw3901mb_spi_read(handle, PMW3901MB_REG_INVERSE_PRODUCT_ID, (uint8_t *)id, 1);       /* get inverse product id */
+    if (res != 0)                                                                                 /* check result */
     {
         handle->debug_print("pmw3901mb: get inverse product id failed.\n");                       /* get inverse product id failed */
        
@@ -1720,7 +1725,7 @@ uint8_t pmw3901mb_get_inverse_product_id(pmw3901mb_handle_t *handle, uint8_t *id
  */
 uint8_t pmw3901mb_get_revison_id(pmw3901mb_handle_t *handle, uint8_t *id)
 {
-    volatile uint8_t res;
+    uint8_t res;
     
     if (handle == NULL)                                                                    /* check handle */
     {
@@ -1731,8 +1736,8 @@ uint8_t pmw3901mb_get_revison_id(pmw3901mb_handle_t *handle, uint8_t *id)
         return 3;                                                                          /* return error */
     }
     
-    res = _pmw3901mb_spi_read(handle, PMW3901MB_REG_REVISION_ID, (uint8_t *)id, 1);        /* get revison id */
-    if (res)                                                                               /* check result */
+    res = a_pmw3901mb_spi_read(handle, PMW3901MB_REG_REVISION_ID, (uint8_t *)id, 1);       /* get revison id */
+    if (res != 0)                                                                          /* check result */
     {
         handle->debug_print("pmw3901mb: get revison id failed.\n");                        /* get revison id failed */
        
@@ -1754,8 +1759,8 @@ uint8_t pmw3901mb_get_revison_id(pmw3901mb_handle_t *handle, uint8_t *id)
  */
 uint8_t pmw3901mb_reset(pmw3901mb_handle_t *handle)
 {
-    volatile uint8_t res;
-    volatile uint8_t cmd;
+    uint8_t res;
+    uint8_t cmd;
     
     if (handle == NULL)                                                                          /* check handle */
     {
@@ -1767,8 +1772,8 @@ uint8_t pmw3901mb_reset(pmw3901mb_handle_t *handle)
     }
     
     cmd = 0x5A;                                                                                  /* power up command */
-    res = _pmw3901mb_spi_write(handle, PMW3901MB_REG_POWER_UP_RESET, (uint8_t *)&cmd, 1);        /* set power up reset */
-    if (res)                                                                                     /* check result */
+    res = a_pmw3901mb_spi_write(handle, PMW3901MB_REG_POWER_UP_RESET, (uint8_t *)&cmd, 1);       /* set power up reset */
+    if (res != 0)                                                                                /* check result */
     {
         handle->debug_print("pmw3901mb: set power up reset failed.\n");                          /* set power up reset failed */
        
@@ -1790,8 +1795,8 @@ uint8_t pmw3901mb_reset(pmw3901mb_handle_t *handle)
  */
 uint8_t pmw3901mb_shutdown(pmw3901mb_handle_t *handle)
 {
-    volatile uint8_t res;
-    volatile uint8_t cmd;
+    uint8_t res;
+    uint8_t cmd;
     
     if (handle == NULL)                                                                    /* check handle */
     {
@@ -1803,8 +1808,8 @@ uint8_t pmw3901mb_shutdown(pmw3901mb_handle_t *handle)
     }
     
     cmd = 0xB6;                                                                            /* shutdown command */
-    res = _pmw3901mb_spi_write(handle, PMW3901MB_REG_SHUTDOWN, (uint8_t *)&cmd, 1);        /* set shutdown reset */
-    if (res)                                                                               /* check result */
+    res = a_pmw3901mb_spi_write(handle, PMW3901MB_REG_SHUTDOWN, (uint8_t *)&cmd, 1);       /* set shutdown reset */
+    if (res != 0)                                                                          /* check result */
     {
         handle->debug_print("pmw3901mb: set shutdown failed.\n");                          /* set shutdown failed */
        
@@ -1827,7 +1832,7 @@ uint8_t pmw3901mb_shutdown(pmw3901mb_handle_t *handle)
  */
 uint8_t pmw3901mb_get_motion(pmw3901mb_handle_t *handle, uint8_t *motion)
 {
-    volatile uint8_t res;
+    uint8_t res;
     
     if (handle == NULL)                                                                   /* check handle */
     {
@@ -1838,8 +1843,8 @@ uint8_t pmw3901mb_get_motion(pmw3901mb_handle_t *handle, uint8_t *motion)
         return 3;                                                                         /* return error */
     }
     
-    res = _pmw3901mb_spi_read(handle, PMW3901MB_REG_MOTION, (uint8_t *)motion, 1);        /* get motion */
-    if (res)                                                                              /* check result */
+    res = a_pmw3901mb_spi_read(handle, PMW3901MB_REG_MOTION, (uint8_t *)motion, 1);       /* get motion */
+    if (res != 0)                                                                         /* check result */
     {
         handle->debug_print("pmw3901mb: get motion failed.\n");                           /* get motion failed */
        
@@ -1862,7 +1867,7 @@ uint8_t pmw3901mb_get_motion(pmw3901mb_handle_t *handle, uint8_t *motion)
  */
 uint8_t pmw3901mb_set_motion(pmw3901mb_handle_t *handle, uint8_t motion)
 {
-    volatile uint8_t res;
+    uint8_t res;
     
     if (handle == NULL)                                                                    /* check handle */
     {
@@ -1873,8 +1878,8 @@ uint8_t pmw3901mb_set_motion(pmw3901mb_handle_t *handle, uint8_t motion)
         return 3;                                                                          /* return error */
     }
     
-    res = _pmw3901mb_spi_write(handle, PMW3901MB_REG_MOTION, (uint8_t *)&motion, 1);       /* set motion */
-    if (res)                                                                               /* check result */
+    res = a_pmw3901mb_spi_write(handle, PMW3901MB_REG_MOTION, (uint8_t *)&motion, 1);      /* set motion */
+    if (res != 0)                                                                          /* check result */
     {
         handle->debug_print("pmw3901mb: set motion failed.\n");                            /* set motion failed */
        
@@ -1897,9 +1902,9 @@ uint8_t pmw3901mb_set_motion(pmw3901mb_handle_t *handle, uint8_t motion)
  */
 uint8_t pmw3901mb_get_delta_x(pmw3901mb_handle_t *handle, int16_t *delta)
 {
-    volatile uint8_t res;
-    volatile uint8_t msb;
-    volatile uint8_t lsb;
+    uint8_t res;
+    uint8_t msb;
+    uint8_t lsb;
     
     if (handle == NULL)                                                                   /* check handle */
     {
@@ -1910,15 +1915,15 @@ uint8_t pmw3901mb_get_delta_x(pmw3901mb_handle_t *handle, int16_t *delta)
         return 3;                                                                         /* return error */
     }
     
-    res = _pmw3901mb_spi_read(handle, PMW3901MB_REG_DELTA_X_L, (uint8_t *)&lsb, 1);       /* get delta xl */
-    if (res)                                                                              /* check result */
+    res = a_pmw3901mb_spi_read(handle, PMW3901MB_REG_DELTA_X_L, (uint8_t *)&lsb, 1);      /* get delta xl */
+    if (res != 0)                                                                         /* check result */
     {
         handle->debug_print("pmw3901mb: get delta xl failed.\n");                         /* get delta xl failed */
        
         return 1;                                                                         /* return error */
     }
-    res = _pmw3901mb_spi_read(handle, PMW3901MB_REG_DELTA_X_H, (uint8_t *)&msb, 1);       /* get delta xh */
-    if (res)                                                                              /* check result */
+    res = a_pmw3901mb_spi_read(handle, PMW3901MB_REG_DELTA_X_H, (uint8_t *)&msb, 1);      /* get delta xh */
+    if (res != 0)                                                                         /* check result */
     {
         handle->debug_print("pmw3901mb: get delta xh failed.\n");                         /* get delta xh failed */
        
@@ -1942,9 +1947,9 @@ uint8_t pmw3901mb_get_delta_x(pmw3901mb_handle_t *handle, int16_t *delta)
  */
 uint8_t pmw3901mb_get_delta_y(pmw3901mb_handle_t *handle, int16_t *delta)
 {
-    volatile uint8_t res;
-    volatile uint8_t msb;
-    volatile uint8_t lsb;
+    uint8_t res;
+    uint8_t msb;
+    uint8_t lsb;
     
     if (handle == NULL)                                                                   /* check handle */
     {
@@ -1955,15 +1960,15 @@ uint8_t pmw3901mb_get_delta_y(pmw3901mb_handle_t *handle, int16_t *delta)
         return 3;                                                                         /* return error */
     }
     
-    res = _pmw3901mb_spi_read(handle, PMW3901MB_REG_DELTA_Y_L, (uint8_t *)&lsb, 1);       /* get delta yl */
-    if (res)                                                                              /* check result */
+    res = a_pmw3901mb_spi_read(handle, PMW3901MB_REG_DELTA_Y_L, (uint8_t *)&lsb, 1);      /* get delta yl */
+    if (res != 0)                                                                         /* check result */
     {
         handle->debug_print("pmw3901mb: get delta yl failed.\n");                         /* get delta yl failed */
        
         return 1;                                                                         /* return error */
     }
-    res = _pmw3901mb_spi_read(handle, PMW3901MB_REG_DELTA_Y_H, (uint8_t *)&msb, 1);       /* get delta yh */
-    if (res)                                                                              /* check result */
+    res = a_pmw3901mb_spi_read(handle, PMW3901MB_REG_DELTA_Y_H, (uint8_t *)&msb, 1);      /* get delta yh */
+    if (res != 0)                                                                         /* check result */
     {
         handle->debug_print("pmw3901mb: get delta yh failed.\n");                         /* get delta yh failed */
        
@@ -1988,7 +1993,7 @@ uint8_t pmw3901mb_get_delta_y(pmw3901mb_handle_t *handle, int16_t *delta)
  */
 uint8_t pmw3901mb_get_motion_burst(pmw3901mb_handle_t *handle, uint8_t *burst, uint8_t len)
 {
-    volatile uint8_t res;
+    uint8_t res;
     
     if (handle == NULL)                                                                        /* check handle */
     {
@@ -1999,8 +2004,8 @@ uint8_t pmw3901mb_get_motion_burst(pmw3901mb_handle_t *handle, uint8_t *burst, u
         return 3;                                                                              /* return error */
     }
     
-    res = _pmw3901mb_spi_read(handle, PMW3901MB_REG_MOTION_BURST, (uint8_t *)burst, len);      /* get motion burst */
-    if (res)                                                                                   /* check result */
+    res = a_pmw3901mb_spi_read(handle, PMW3901MB_REG_MOTION_BURST, (uint8_t *)burst, len);     /* get motion burst */
+    if (res != 0)                                                                              /* check result */
     {
         handle->debug_print("pmw3901mb: get motion burst failed.\n");                          /* get motion burst failed */
        
@@ -2023,7 +2028,7 @@ uint8_t pmw3901mb_get_motion_burst(pmw3901mb_handle_t *handle, uint8_t *burst, u
  */
 uint8_t pmw3901mb_get_squal(pmw3901mb_handle_t *handle, uint8_t *squal)
 {
-    volatile uint8_t res;
+    uint8_t res;
     
     if (handle == NULL)                                                                 /* check handle */
     {
@@ -2034,8 +2039,8 @@ uint8_t pmw3901mb_get_squal(pmw3901mb_handle_t *handle, uint8_t *squal)
         return 3;                                                                       /* return error */
     }
     
-    res = _pmw3901mb_spi_read(handle, PMW3901MB_REG_SQUAL, (uint8_t *)squal, 1);        /* get squal */
-    if (res)                                                                            /* check result */
+    res = a_pmw3901mb_spi_read(handle, PMW3901MB_REG_SQUAL, (uint8_t *)squal, 1);       /* get squal */
+    if (res != 0)                                                                       /* check result */
     {
         handle->debug_print("pmw3901mb: get squal failed.\n");                          /* get squal failed */
        
@@ -2058,7 +2063,7 @@ uint8_t pmw3901mb_get_squal(pmw3901mb_handle_t *handle, uint8_t *squal)
  */
 uint8_t pmw3901mb_get_raw_data_sum(pmw3901mb_handle_t *handle, uint8_t *sum)
 {
-    volatile uint8_t res;
+    uint8_t res;
     
     if (handle == NULL)                                                                      /* check handle */
     {
@@ -2069,8 +2074,8 @@ uint8_t pmw3901mb_get_raw_data_sum(pmw3901mb_handle_t *handle, uint8_t *sum)
         return 3;                                                                            /* return error */
     }
     
-    res = _pmw3901mb_spi_read(handle, PMW3901MB_REG_RAW_DATA_SUM, (uint8_t *)sum, 1);        /* get sum */
-    if (res)                                                                                 /* check result */
+    res = a_pmw3901mb_spi_read(handle, PMW3901MB_REG_RAW_DATA_SUM, (uint8_t *)sum, 1);       /* get sum */
+    if (res != 0)                                                                            /* check result */
     {
         handle->debug_print("pmw3901mb: get sum failed.\n");                                 /* get sum failed */
        
@@ -2093,7 +2098,7 @@ uint8_t pmw3901mb_get_raw_data_sum(pmw3901mb_handle_t *handle, uint8_t *sum)
  */
 uint8_t pmw3901mb_get_max_raw_data(pmw3901mb_handle_t *handle, uint8_t *max)
 {
-    volatile uint8_t res;
+    uint8_t res;
     
     if (handle == NULL)                                                                          /* check handle */
     {
@@ -2104,8 +2109,8 @@ uint8_t pmw3901mb_get_max_raw_data(pmw3901mb_handle_t *handle, uint8_t *max)
         return 3;                                                                                /* return error */
     }
     
-    res = _pmw3901mb_spi_read(handle, PMW3901MB_REG_MAXIMUM_RAW_DATA, (uint8_t *)max, 1);        /* get maximum raw data */
-    if (res)                                                                                     /* check result */
+    res = a_pmw3901mb_spi_read(handle, PMW3901MB_REG_MAXIMUM_RAW_DATA, (uint8_t *)max, 1);       /* get maximum raw data */
+    if (res != 0)                                                                                /* check result */
     {
         handle->debug_print("pmw3901mb: get maximum raw data failed.\n");                        /* get maximum raw data failed */
        
@@ -2128,7 +2133,7 @@ uint8_t pmw3901mb_get_max_raw_data(pmw3901mb_handle_t *handle, uint8_t *max)
  */
 uint8_t pmw3901mb_get_min_raw_data(pmw3901mb_handle_t *handle, uint8_t *min)
 {
-    volatile uint8_t res;
+    uint8_t res;
     
     if (handle == NULL)                                                                          /* check handle */
     {
@@ -2139,8 +2144,8 @@ uint8_t pmw3901mb_get_min_raw_data(pmw3901mb_handle_t *handle, uint8_t *min)
         return 3;                                                                                /* return error */
     }
     
-    res = _pmw3901mb_spi_read(handle, PMW3901MB_REG_MINIMUM_RAW_DATA, (uint8_t *)min, 1);        /* get minimum raw data */
-    if (res)                                                                                     /* check result */
+    res = a_pmw3901mb_spi_read(handle, PMW3901MB_REG_MINIMUM_RAW_DATA, (uint8_t *)min, 1);       /* get minimum raw data */
+    if (res != 0)                                                                                /* check result */
     {
         handle->debug_print("pmw3901mb: get minimum raw data failed.\n");                        /* get minimum raw data failed */
        
@@ -2163,9 +2168,9 @@ uint8_t pmw3901mb_get_min_raw_data(pmw3901mb_handle_t *handle, uint8_t *min)
  */
 uint8_t pmw3901mb_get_shutter(pmw3901mb_handle_t *handle, uint16_t *shutter)
 {
-    volatile uint8_t res;
-    volatile uint8_t msb;
-    volatile uint8_t lsb;
+    uint8_t res;
+    uint8_t msb;
+    uint8_t lsb;
     
     if (handle == NULL)                                                                        /* check handle */
     {
@@ -2176,15 +2181,15 @@ uint8_t pmw3901mb_get_shutter(pmw3901mb_handle_t *handle, uint16_t *shutter)
         return 3;                                                                              /* return error */
     }
     
-    res = _pmw3901mb_spi_read(handle, PMW3901MB_REG_SHUTTER_UPPER, (uint8_t *)&msb, 1);        /* get shutter upper */
-    if (res)                                                                                   /* check result */
+    res = a_pmw3901mb_spi_read(handle, PMW3901MB_REG_SHUTTER_UPPER, (uint8_t *)&msb, 1);       /* get shutter upper */
+    if (res != 0)                                                                              /* check result */
     {
         handle->debug_print("pmw3901mb: get shutter upper failed.\n");                         /* get shutter upper failed */
        
         return 1;                                                                              /* return error */
     }
-    res = _pmw3901mb_spi_read(handle, PMW3901MB_REG_SHUTTER_LOWER, (uint8_t *)&lsb, 1);        /* get shutter lower */
-    if (res)                                                                                   /* check result */
+    res = a_pmw3901mb_spi_read(handle, PMW3901MB_REG_SHUTTER_LOWER, (uint8_t *)&lsb, 1);       /* get shutter lower */
+    if (res != 0)                                                                              /* check result */
     {
         handle->debug_print("pmw3901mb: get shutter lower failed.\n");                         /* get shutter lower failed */
        
@@ -2208,7 +2213,7 @@ uint8_t pmw3901mb_get_shutter(pmw3901mb_handle_t *handle, uint16_t *shutter)
  */
 uint8_t pmw3901mb_get_observation(pmw3901mb_handle_t *handle, uint8_t *observation)
 {
-    volatile uint8_t res;
+    uint8_t res;
     
     if (handle == NULL)                                                                             /* check handle */
     {
@@ -2219,8 +2224,8 @@ uint8_t pmw3901mb_get_observation(pmw3901mb_handle_t *handle, uint8_t *observati
         return 3;                                                                                   /* return error */
     }
     
-    res = _pmw3901mb_spi_read(handle, PMW3901MB_REG_OBSERVATION, (uint8_t *)observation, 1);        /* get observation data */
-    if (res)                                                                                        /* check result */
+    res = a_pmw3901mb_spi_read(handle, PMW3901MB_REG_OBSERVATION, (uint8_t *)observation, 1);       /* get observation data */
+    if (res != 0)                                                                                   /* check result */
     {
         handle->debug_print("pmw3901mb: get observation failed.\n");                                /* get observation failed */
        
@@ -2244,7 +2249,7 @@ uint8_t pmw3901mb_get_observation(pmw3901mb_handle_t *handle, uint8_t *observati
  */
 uint8_t pmw3901mb_set_observation(pmw3901mb_handle_t *handle, uint8_t observation)
 {
-    volatile uint8_t res;
+    uint8_t res;
     
     if (handle == NULL)                                                                               /* check handle */
     {
@@ -2255,8 +2260,8 @@ uint8_t pmw3901mb_set_observation(pmw3901mb_handle_t *handle, uint8_t observatio
         return 3;                                                                                     /* return error */
     }
     
-    res = _pmw3901mb_spi_write(handle, PMW3901MB_REG_OBSERVATION, (uint8_t *)&observation, 1);        /* set observation data */
-    if (res)                                                                                          /* check result */
+    res = a_pmw3901mb_spi_write(handle, PMW3901MB_REG_OBSERVATION, (uint8_t *)&observation, 1);       /* set observation data */
+    if (res != 0)                                                                                     /* check result */
     {
         handle->debug_print("pmw3901mb: set observation failed.\n");                                  /* set observation failed */
        
@@ -2280,8 +2285,8 @@ uint8_t pmw3901mb_set_observation(pmw3901mb_handle_t *handle, uint8_t observatio
  */
 uint8_t pmw3901mb_get_raw_data_grab(pmw3901mb_handle_t *handle, uint8_t *grab, uint16_t len)
 {
-    volatile uint8_t res;
-    volatile uint16_t i;
+    uint8_t res;
+    uint16_t i;
     
     if (handle == NULL)                                                                                /* check handle */
     {
@@ -2294,8 +2299,8 @@ uint8_t pmw3901mb_get_raw_data_grab(pmw3901mb_handle_t *handle, uint8_t *grab, u
     
     for (i = 0; i < len; i++)                                                                          /* length times */
     {
-        res = _pmw3901mb_spi_read(handle, PMW3901MB_REG_RAW_DATA_GRAB, (uint8_t *)&grab[i], 1);        /* get raw data grab data */
-        if (res)                                                                                       /* check result */
+        res = a_pmw3901mb_spi_read(handle, PMW3901MB_REG_RAW_DATA_GRAB, (uint8_t *)&grab[i], 1);       /* get raw data grab data */
+        if (res != 0)                                                                                  /* check result */
         {
             handle->debug_print("pmw3901mb: get raw data grab failed.\n");                             /* get raw data grab failed */
            
@@ -2320,8 +2325,8 @@ uint8_t pmw3901mb_get_raw_data_grab(pmw3901mb_handle_t *handle, uint8_t *grab, u
  */
 uint8_t pmw3901mb_set_raw_data_grab(pmw3901mb_handle_t *handle, uint8_t *grab, uint16_t len)
 {
-    volatile uint8_t res;
-    volatile uint16_t i;
+    uint8_t res;
+    uint16_t i;
     
     if (handle == NULL)                                                                                /* check handle */
     {
@@ -2334,8 +2339,8 @@ uint8_t pmw3901mb_set_raw_data_grab(pmw3901mb_handle_t *handle, uint8_t *grab, u
     
     for (i = 0; i < len; i++)                                                                          /* length times */
     {
-        res = _pmw3901mb_spi_write(handle, PMW3901MB_REG_RAW_DATA_GRAB, (uint8_t *)&grab[i], 1);       /* set raw data grab */
-        if (res)                                                                                       /* check result */
+        res = a_pmw3901mb_spi_write(handle, PMW3901MB_REG_RAW_DATA_GRAB, (uint8_t *)&grab[i], 1);      /* set raw data grab */
+        if (res != 0)                                                                                  /* check result */
         {
             handle->debug_print("pmw3901mb: set raw data grab failed.\n");                             /* set raw data grab failed */
            
@@ -2359,7 +2364,7 @@ uint8_t pmw3901mb_set_raw_data_grab(pmw3901mb_handle_t *handle, uint8_t *grab, u
  */
 uint8_t pmw3901mb_get_raw_data_grab_status(pmw3901mb_handle_t *handle, uint8_t *status)
 {
-    volatile uint8_t res;
+    uint8_t res;
     
     if (handle == NULL)                                                                                 /* check handle */
     {
@@ -2370,8 +2375,8 @@ uint8_t pmw3901mb_get_raw_data_grab_status(pmw3901mb_handle_t *handle, uint8_t *
         return 3;                                                                                       /* return error */
     }
     
-    res = _pmw3901mb_spi_read(handle, PMW3901MB_REG_RAW_DATA_GRAB_STATUS, (uint8_t *)status, 1);        /* get raw data grab status */
-    if (res)                                                                                            /* check result */
+    res = a_pmw3901mb_spi_read(handle, PMW3901MB_REG_RAW_DATA_GRAB_STATUS, (uint8_t *)status, 1);       /* get raw data grab status */
+    if (res != 0)                                                                                       /* check result */
     {
         handle->debug_print("pmw3901mb: get raw data grab status failed.\n");                           /* get raw data grab status failed */
        
@@ -2434,7 +2439,7 @@ uint8_t pmw3901mb_set_reg(pmw3901mb_handle_t *handle, uint8_t reg, uint8_t *buf,
         return 3;                                              /* return error */
     }
     
-    return _pmw3901mb_spi_write(handle, reg, buf, len);        /* write data */
+    return a_pmw3901mb_spi_write(handle, reg, buf, len);       /* write data */
 }
 
 /**
@@ -2461,7 +2466,7 @@ uint8_t pmw3901mb_get_reg(pmw3901mb_handle_t *handle, uint8_t reg, uint8_t *buf,
         return 3;                                             /* return error */
     }
     
-    return _pmw3901mb_spi_read(handle, reg, buf, len);        /* read data */
+    return a_pmw3901mb_spi_read(handle, reg, buf, len);       /* read data */
 }
 
 /**

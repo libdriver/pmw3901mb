@@ -8,44 +8,44 @@
 
 [![MISRA](https://img.shields.io/badge/misra-compliant-brightgreen.svg)](/misra/README.md) [![API](https://img.shields.io/badge/api-reference-blue.svg)](https://www.libdriver.com/docs/pmw3901mb/index.html) [![License](https://img.shields.io/badge/license-MIT-brightgreen.svg)](/LICENSE)
 
-PMW3901MB 是 PixArt Imaging 最新的光學導航芯片，採用遠場光學技術設計，可實現空中導航。它採用 28 引腳板載芯片 (COB) 封裝，提供 X-Y 運動信息，工作範圍從 80 毫米到無窮遠。它最適合運動檢測的遠場應用。
+PMW3901MBは、空中でのナビゲーションを可能にする遠方界光学技術で設計されたPixArtImagingの最新の光学ナビゲーションチップです。 28ピンのチップオンボード（COB）パッケージに収められており、80mmから無限大までの広い動作範囲でX-Yモーション情報を提供します。 動き検出の遠方界アプリケーションに最適です。
 
-LibDriver PMW3901MB 是LibDriver推出的PMW3901MB 的全功能驅動，該驅動提供原始數據幀讀取，導航數據讀取，中斷讀取等功能並且它符合MISRA標準。
+LibDriver PMW3901MBは、LibDriverによって起動されたpmw3901mbの全機能ドライバーです。 フレーム読み取り、ナビゲーション読み取り、割り込み読み取り、およびその他の機能を提供します。LibDriverはMISRAに準拠しています。
 
-### 目錄
+### 目次
 
-  - [說明](#說明)
-  - [安裝](#安裝)
+  - [説明](#説明)
+  - [インストール](#インストール)
   - [使用](#使用)
     - [example basic](#example-basic)
     - [example frame](#example-frame)
     - [example interrupt](#example-interrupt)
-  - [文檔](#文檔)
-  - [貢獻](#貢獻)
-  - [版權](#版權)
-  - [聯繫我們](#聯繫我們)
+  - [ドキュメント](#ドキュメント)
+  - [貢献](#貢献)
+  - [著作権](#著作権)
+  - [連絡して](#連絡して)
 
-### 說明
+### 説明
 
-/src目錄包含了LibDriver PMW3901MB的源文件。
+/ srcディレクトリには、LibDriver PMW3901MBのソースファイルが含まれています。
 
-/interface目錄包含了LibDriver PMW3901MB與平台無關的SPI總線模板。
+/ interfaceディレクトリには、LibDriver PMW3901MB用のプラットフォームに依存しないSPIバステンプレートが含まれています。
 
-/test目錄包含了LibDriver PMW3901MB驅動測試程序，該程序可以簡單的測試芯片必要功能。
+/ testディレクトリには、チップの必要な機能を簡単にテストできるLibDriver PMW3901MBドライバーテストプログラムが含まれています。
 
-/example目錄包含了LibDriver PMW3901MB編程範例。
+/ exampleディレクトリには、LibDriver PMW3901MBプログラミング例が含まれています。
 
-/doc目錄包含了LibDriver PMW3901MB離線文檔。
+/ docディレクトリには、LibDriver PMW3901MBオフラインドキュメントが含まれています。
 
-/datasheet目錄包含了PMW3901MB數據手冊。
+/ datasheetディレクトリには、PMW3901MBデータシートが含まれています。
 
-/project目錄包含了常用Linux與單片機開發板的工程樣例。所有工程均採用shell腳本作為調試方法，詳細內容可參考每個工程裡面的README.md。
+/ projectディレクトリには、一般的に使用されるLinuxおよびマイクロコントローラー開発ボードのプロジェクトサンプルが含まれています。 すべてのプロジェクトは、デバッグ方法としてシェルスクリプトを使用しています。詳細については、各プロジェクトのREADME.mdを参照してください。
 
-### 安裝
+### インストール
 
-參考/interface目錄下與平台無關的SPI總線模板，完成指定平台的SPI總線驅動。
+/ interfaceディレクトリにあるプラットフォームに依存しないSPIバステンプレートを参照して、指定したプラットフォームのSPIバスドライバを完成させます。
 
-將/src目錄，/interface目錄和/example目錄加入工程。
+/ srcディレクトリ、/ interfaceディレクトリ、および/exampleディレクトリをプロジェクトに追加します。
 
 ### 使用
 
@@ -117,7 +117,7 @@ return 0;
 
 #### example frame
 
-```C
+```c
 uint8_t res;
 uint32_t k, times;
 uint32_t i, j;
@@ -167,7 +167,6 @@ for (k = 0; k < times; k++)
 
 return 0;
 ```
-
 #### example interrupt
 
 ```C
@@ -240,28 +239,28 @@ g_gpio_irq = NULL;
 return 0;
 ```
 
-### 文檔
+### ドキュメント
 
-在線文檔: https://www.libdriver.com/docs/pmw3901mb/index.html
+オンラインドキュメント: https://www.libdriver.com/docs/pmw3901mb/index.html
 
-離線文檔: /doc/html/index.html
+オフラインドキュメント: /doc/html/index.html
 
-### 貢獻
+### 貢献
 
-請聯繫lishifenging@outlook.com
+お問い合わせくださいlishifenging@outlook.com
 
-### 版權
+### 著作権
 
-版權 (c) 2015 - 現在 LibDriver 版權所有
+著作権（c）2015-今 LibDriver 全著作権所有
 
-MIT 許可證（MIT）
+MITライセンス（MIT）
 
-特此免費授予任何獲得本軟件副本和相關文檔文件（下稱“軟件”）的人不受限制地處置該軟件的權利，包括不受限制地使用、複製、修改、合併、發布、分發、轉授許可和/或出售該軟件副本，以及再授權被配發了本軟件的人如上的權利，須在下列條件下：
+このソフトウェアおよび関連するドキュメントファイル（「ソフトウェア」）のコピーを取得した人は、無制限の使用、複製、変更、組み込み、公開、配布、サブライセンスを含む、ソフトウェアを処分する権利を制限なく付与されます。ソフトウェアのライセンスおよび/またはコピーの販売、および上記のようにソフトウェアが配布された人の権利のサブライセンスは、次の条件に従うものとします。
 
-上述版權聲明和本許可聲明應包含在該軟件的所有副本或實質成分中。
+上記の著作権表示およびこの許可通知は、このソフトウェアのすべてのコピーまたは実体に含まれるものとします。
 
-本軟件是“如此”提供的，沒有任何形式的明示或暗示的保證，包括但不限於對適銷性、特定用途的適用性和不侵權的保證。在任何情況下，作者或版權持有人都不對任何索賠、損害或其他責任負責，無論這些追責來自合同、侵權或其它行為中，還是產生於、源於或有關於本軟件以及本軟件的使用或其它處置。
+このソフトウェアは「現状有姿」で提供され、商品性、特定目的への適合性、および非侵害の保証を含むがこれらに限定されない、明示または黙示を問わず、いかなる種類の保証もありません。 いかなる場合も、作者または著作権所有者は、契約、不法行為、またはその他の方法で、本ソフトウェアおよび本ソフトウェアの使用またはその他の廃棄に起因または関連して、請求、損害、またはその他の責任を負わないものとします。
 
-### 聯繫我們
+### 連絡して
 
-請聯繫lishifenging@outlook.com
+お問い合わせくださいlishifenging@outlook.com

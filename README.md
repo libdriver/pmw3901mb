@@ -1,4 +1,4 @@
-[English](/README.md) | [ 简体中文](/README_zh-Hans.md) | [繁體中文](/README_zh-Hant.md)
+[English](/README.md) | [ 简体中文](/README_zh-Hans.md) | [繁體中文](/README_zh-Hant.md) | [日本語](/README_ja.md) | [Deutsch](/README_de.md) | [한국어](/README_ko.md)
 
 <div align=center>
 <img src="/doc/image/logo.png"/>
@@ -6,11 +6,11 @@
 
 ## LibDriver PMW3901MB
 
-[![API](https://img.shields.io/badge/api-reference-blue)](https://www.libdriver.com/docs/pmw3901mb/index.html) [![License](https://img.shields.io/badge/license-MIT-brightgreen.svg)](/LICENSE)
+[![MISRA](https://img.shields.io/badge/misra-compliant-brightgreen.svg)](/misra/README.md) [![API](https://img.shields.io/badge/api-reference-blue.svg)](https://www.libdriver.com/docs/pmw3901mb/index.html) [![License](https://img.shields.io/badge/license-MIT-brightgreen.svg)](/LICENSE)
 
 The PMW3901MB is PixArt Imaging's latest optical  navigation chip designed with far field optics technology  that enables navigation in the air. It is housed in a 28-pin chip-on-board  (COB)  package  that  provides  X-Y  motion information  with  a  wide  working  range  of  80  mm  to infinity.  It  is  most  suitable  for  far  field application  for motion detection. 
 
-LibDriver PMW3901MB is the full function driver of pmw3901mb launched by LibDriver. It provides frame reading, navigation reading, interrupt reading and other functions.
+LibDriver PMW3901MB is the full function driver of pmw3901mb launched by LibDriver. It provides frame reading, navigation reading, interrupt reading and other functions LibDriver is MISRA compliant.
 
 ### Table of Contents
 
@@ -52,17 +52,17 @@ Add /src, /interface and /example to your project.
 #### example basic
 
 ```C
-volatile uint8_t res;
-volatile float height;
-volatile float delta_x;
-volatile float delta_y;
-volatile uint32_t i, times;
+uint8_t res;
+float height;
+float delta_x;
+float delta_y;
+uint32_t i, times;
 pmw3901mb_motion_t motion;
 
 height = 1.0f;
 times = 3;
 res = pmw3901mb_basic_init();
-if (res)
+if (res ！= 0)
 {
     return 1;
 }
@@ -74,9 +74,9 @@ for (i = 0; i < times; i++)
     read:
 
     res = pmw3901mb_basic_read(height, &motion, (float *)&delta_x, (float *)&delta_y);
-    if (res)
+    if (res ！= 0)
     {
-        pmw3901mb_basic_deinit();
+        (void)pmw3901mb_basic_deinit();
 
         return 1;
     }
@@ -110,7 +110,7 @@ for (i = 0; i < times; i++)
 
 ...
     
-pmw3901mb_basic_deinit();
+(void)pmw3901mb_basic_deinit();
 
 return 0;
 ```
@@ -118,14 +118,14 @@ return 0;
 #### example frame
 
 ```C
-volatile uint8_t res;
-volatile uint32_t k, times;
-volatile uint32_t i, j;
+uint8_t res;
+uint32_t k, times;
+uint32_t i, j;
 static uint8_t gs_frame[35][35];
 
 times = 3;
 res = pmw3901mb_frame_init();
-if (res)
+if (res != 0)
 {
     return 1;
 }
@@ -135,9 +135,9 @@ if (res)
 for (k = 0; k < times; k++)
 {
     res = pmw3901mb_frame_read(gs_frame);
-    if (res)
+    if (res != 0)
     {
-        pmw3901mb_frame_deinit();
+        (void)pmw3901mb_frame_deinit();
 
         return 1;
     }
@@ -163,7 +163,7 @@ for (k = 0; k < times; k++)
 
 ...
     
-pmw3901mb_frame_deinit();
+(void)pmw3901mb_frame_deinit();
 
 return 0;
 ```
@@ -172,11 +172,11 @@ return 0;
 
 ```C
 uint8_t (*g_gpio_irq)(float height_m) = NULL;
-volatile static uint8_t gs_flag;
-volatile uint8_t res;
-volatile uint32_t i, times;
+static uint8_t gs_flag;
+uint8_t res;
+uint32_t i, times;
 
-static uint8_t _callback(pmw3901mb_motion_t *motion, float delta_x, float delta_y)
+static void a_callback(pmw3901mb_motion_t *motion, float delta_x, float delta_y)
 {
     /* check the result */
     if (motion->is_valid == 1)
@@ -194,15 +194,13 @@ static uint8_t _callback(pmw3901mb_motion_t *motion, float delta_x, float delta_
         /* set flag */
         gs_flag = 1;
     }
-    
-    return 0;
 }
 
 ...
     
 times = 3;
 res = gpio_interrupt_init();
-if (res)
+if (res != 0)
 {
     return 1;
 }
@@ -211,9 +209,9 @@ g_gpio_irq = pmw3901mb_interrupt_irq_handler;
 ...
 
 res = pmw3901mb_interrupt_init(_callback);
-if (res)
+if (res != 0)
 {
-    pmw3901mb_interrupt_deinit();
+    (void)pmw3901mb_interrupt_deinit();
 
     return 1;
 }
@@ -235,8 +233,8 @@ for (i = 0; i < times; i++)
 
 ...
     
-pmw3901mb_interrupt_deinit();
-gpio_interrupt_deinit();
+(void)pmw3901mb_interrupt_deinit();
+(void)gpio_interrupt_deinit();
 g_gpio_irq = NULL;
 
 return 0;

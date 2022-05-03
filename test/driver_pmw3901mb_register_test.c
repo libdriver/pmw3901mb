@@ -47,19 +47,19 @@ static pmw3901mb_handle_t gs_handle;        /**< pmw3901mb handle */
  */
 uint8_t pmw3901mb_register_test(void)
 {
-    volatile uint8_t res;
-    volatile uint8_t id;
-    volatile uint8_t motion;
-    volatile int16_t delta;
-    volatile uint8_t burst;
-    volatile uint8_t squal;
-    volatile uint8_t sum;
-    volatile uint8_t max;
-    volatile uint8_t min;
-    volatile uint8_t observation;
-    volatile uint8_t grab;
-    volatile uint8_t status;
-    volatile uint16_t shutter;
+    uint8_t res;
+    uint8_t id;
+    uint8_t motion;
+    int16_t delta;
+    uint8_t burst;
+    uint8_t squal;
+    uint8_t sum;
+    uint8_t max;
+    uint8_t min;
+    uint8_t observation;
+    uint8_t grab;
+    uint8_t status;
+    uint16_t shutter;
     pmw3901mb_info_t info;
     
     /* link interface function */
@@ -76,7 +76,7 @@ uint8_t pmw3901mb_register_test(void)
     
     /* get information */
     res = pmw3901mb_info(&info);
-    if (res)
+    if (res != 0)
     {
         pmw3901mb_interface_debug_print("pmw3901mb: get info failed.\n");
        
@@ -101,7 +101,7 @@ uint8_t pmw3901mb_register_test(void)
     
     /* init pmw3901mb */
     res = pmw3901mb_init(&gs_handle);
-    if (res)
+    if (res != 0)
     {
         pmw3901mb_interface_debug_print("pmw3901mb: init failed.\n");
        
@@ -110,10 +110,10 @@ uint8_t pmw3901mb_register_test(void)
     
     /* power up */
     res = pmw3901mb_power_up(&gs_handle);
-    if (res)
+    if (res != 0)
     {
         pmw3901mb_interface_debug_print("pmw3901mb: power up failed.\n");
-        pmw3901mb_deinit(&gs_handle);
+        (void)pmw3901mb_deinit(&gs_handle);
         
         return 1;
     }
@@ -123,10 +123,10 @@ uint8_t pmw3901mb_register_test(void)
     
     /* get product id */
     res = pmw3901mb_get_product_id(&gs_handle, (uint8_t *)&id);
-    if (res)
+    if (res != 0)
     {
         pmw3901mb_interface_debug_print("pmw3901mb: get product id failed.\n");
-        pmw3901mb_deinit(&gs_handle);
+        (void)pmw3901mb_deinit(&gs_handle);
         
         return 1;
     }
@@ -137,10 +137,10 @@ uint8_t pmw3901mb_register_test(void)
     
     /* get inverse product id */
     res = pmw3901mb_get_inverse_product_id(&gs_handle, (uint8_t *)&id);
-    if (res)
+    if (res != 0)
     {
         pmw3901mb_interface_debug_print("pmw3901mb: get inverse product id failed.\n");
-        pmw3901mb_deinit(&gs_handle);
+        (void)pmw3901mb_deinit(&gs_handle);
         
         return 1;
     }
@@ -151,10 +151,10 @@ uint8_t pmw3901mb_register_test(void)
     
     /* get revison id */
     res = pmw3901mb_get_revison_id(&gs_handle, (uint8_t *)&id);
-    if (res)
+    if (res != 0)
     {
         pmw3901mb_interface_debug_print("pmw3901mb: get revison id failed.\n");
-        pmw3901mb_deinit(&gs_handle);
+        (void)pmw3901mb_deinit(&gs_handle);
         
         return 1;
     }
@@ -165,10 +165,10 @@ uint8_t pmw3901mb_register_test(void)
     
     /* get motion */
     res = pmw3901mb_get_motion(&gs_handle, (uint8_t *)&motion);
-    if (res)
+    if (res != 0)
     {
         pmw3901mb_interface_debug_print("pmw3901mb: get motion failed.\n");
-        pmw3901mb_deinit(&gs_handle);
+        (void)pmw3901mb_deinit(&gs_handle);
         
         return 1;
     }
@@ -180,10 +180,10 @@ uint8_t pmw3901mb_register_test(void)
     /* set motion */
     motion = 0x00;
     res = pmw3901mb_set_motion(&gs_handle, motion);
-    if (res)
+    if (res != 0)
     {
         pmw3901mb_interface_debug_print("pmw3901mb: set motion failed.\n");
-        pmw3901mb_deinit(&gs_handle);
+        (void)pmw3901mb_deinit(&gs_handle);
         
         return 1;
     }
@@ -194,10 +194,10 @@ uint8_t pmw3901mb_register_test(void)
     
     /* get delta x */
     res = pmw3901mb_get_delta_x(&gs_handle, (int16_t *)&delta);
-    if (res)
+    if (res != 0)
     {
         pmw3901mb_interface_debug_print("pmw3901mb: get delta x failed.\n");
-        pmw3901mb_deinit(&gs_handle);
+        (void)pmw3901mb_deinit(&gs_handle);
         
         return 1;
     }
@@ -208,10 +208,10 @@ uint8_t pmw3901mb_register_test(void)
     
     /* get delta y */
     res = pmw3901mb_get_delta_y(&gs_handle, (int16_t *)&delta);
-    if (res)
+    if (res != 0)
     {
         pmw3901mb_interface_debug_print("pmw3901mb: get delta y failed.\n");
-        pmw3901mb_deinit(&gs_handle);
+        (void)pmw3901mb_deinit(&gs_handle);
         
         return 1;
     }
@@ -222,10 +222,10 @@ uint8_t pmw3901mb_register_test(void)
     
     /* get motion burst */
     res = pmw3901mb_get_motion_burst(&gs_handle, (uint8_t *)&burst, 1);
-    if (res)
+    if (res != 0)
     {
         pmw3901mb_interface_debug_print("pmw3901mb: get motion burst failed.\n");
-        pmw3901mb_deinit(&gs_handle);
+        (void)pmw3901mb_deinit(&gs_handle);
         
         return 1;
     }
@@ -236,10 +236,10 @@ uint8_t pmw3901mb_register_test(void)
     
     /* get squal */
     res = pmw3901mb_get_squal(&gs_handle, (uint8_t *)&squal);
-    if (res)
+    if (res != 0)
     {
         pmw3901mb_interface_debug_print("pmw3901mb: get squal failed.\n");
-        pmw3901mb_deinit(&gs_handle);
+        (void)pmw3901mb_deinit(&gs_handle);
         
         return 1;
     }
@@ -250,10 +250,10 @@ uint8_t pmw3901mb_register_test(void)
     
     /* get raw data sum */
     res = pmw3901mb_get_raw_data_sum(&gs_handle, (uint8_t *)&sum);
-    if (res)
+    if (res != 0)
     {
         pmw3901mb_interface_debug_print("pmw3901mb: get raw data sum failed.\n");
-        pmw3901mb_deinit(&gs_handle);
+        (void)pmw3901mb_deinit(&gs_handle);
         
         return 1;
     }
@@ -264,10 +264,10 @@ uint8_t pmw3901mb_register_test(void)
     
     /* get max raw data */
     res = pmw3901mb_get_max_raw_data(&gs_handle, (uint8_t *)&max);
-    if (res)
+    if (res != 0)
     {
         pmw3901mb_interface_debug_print("pmw3901mb: get max raw data failed.\n");
-        pmw3901mb_deinit(&gs_handle);
+        (void)pmw3901mb_deinit(&gs_handle);
         
         return 1;
     }
@@ -278,10 +278,10 @@ uint8_t pmw3901mb_register_test(void)
     
     /* get min raw data */
     res = pmw3901mb_get_min_raw_data(&gs_handle, (uint8_t *)&min);
-    if (res)
+    if (res != 0)
     {
         pmw3901mb_interface_debug_print("pmw3901mb: get min raw data failed.\n");
-        pmw3901mb_deinit(&gs_handle);
+        (void)pmw3901mb_deinit(&gs_handle);
         
         return 1;
     }
@@ -292,10 +292,10 @@ uint8_t pmw3901mb_register_test(void)
     
     /* get shutter */
     res = pmw3901mb_get_shutter(&gs_handle, (uint16_t *)&shutter);
-    if (res)
+    if (res != 0)
     {
         pmw3901mb_interface_debug_print("pmw3901mb: get shutter failed.\n");
-        pmw3901mb_deinit(&gs_handle);
+        (void)pmw3901mb_deinit(&gs_handle);
         
         return 1;
     }
@@ -306,10 +306,10 @@ uint8_t pmw3901mb_register_test(void)
     
     /* get observation */
     res = pmw3901mb_get_observation(&gs_handle, (uint8_t *)&observation);
-    if (res)
+    if (res != 0)
     {
         pmw3901mb_interface_debug_print("pmw3901mb: get observation failed.\n");
-        pmw3901mb_deinit(&gs_handle);
+        (void)pmw3901mb_deinit(&gs_handle);
         
         return 1;
     }
@@ -321,10 +321,10 @@ uint8_t pmw3901mb_register_test(void)
     /* set observation */
     observation = 0x00;
     res = pmw3901mb_set_observation(&gs_handle, observation);
-    if (res)
+    if (res != 0)
     {
         pmw3901mb_interface_debug_print("pmw3901mb: set observation failed.\n");
-        pmw3901mb_deinit(&gs_handle);
+        (void)pmw3901mb_deinit(&gs_handle);
         
         return 1;
     }
@@ -335,10 +335,10 @@ uint8_t pmw3901mb_register_test(void)
     
     /* get raw data grab */
     res = pmw3901mb_get_raw_data_grab(&gs_handle, (uint8_t *)&grab, 1);
-    if (res)
+    if (res != 0)
     {
         pmw3901mb_interface_debug_print("pmw3901mb: get raw data grab failed.\n");
-        pmw3901mb_deinit(&gs_handle);
+        (void)pmw3901mb_deinit(&gs_handle);
         
         return 1;
     }
@@ -350,10 +350,10 @@ uint8_t pmw3901mb_register_test(void)
     /* set raw data grab */
     grab = 0x00;
     res = pmw3901mb_set_raw_data_grab(&gs_handle, (uint8_t *)&grab, 1);
-    if (res)
+    if (res != 0)
     {
         pmw3901mb_interface_debug_print("pmw3901mb: set raw data grab failed.\n");
-        pmw3901mb_deinit(&gs_handle);
+        (void)pmw3901mb_deinit(&gs_handle);
         
         return 1;
     }
@@ -364,10 +364,10 @@ uint8_t pmw3901mb_register_test(void)
     
     /* get raw data grab status */
     res = pmw3901mb_get_raw_data_grab_status(&gs_handle, (uint8_t *)&status);
-    if (res)
+    if (res != 0)
     {
         pmw3901mb_interface_debug_print("pmw3901mb: get raw data grab status failed.\n");
-        pmw3901mb_deinit(&gs_handle);
+        (void)pmw3901mb_deinit(&gs_handle);
         
         return 1;
     }
@@ -378,10 +378,10 @@ uint8_t pmw3901mb_register_test(void)
     
     /* reset */
     res = pmw3901mb_reset(&gs_handle);
-    if (res)
+    if (res != 0)
     {
         pmw3901mb_interface_debug_print("pmw3901mb: reset failed.\n");
-        pmw3901mb_deinit(&gs_handle);
+        (void)pmw3901mb_deinit(&gs_handle);
         
         return 1;
     }
@@ -392,10 +392,10 @@ uint8_t pmw3901mb_register_test(void)
     
     /* shutdown */
     res = pmw3901mb_shutdown(&gs_handle);
-    if (res)
+    if (res != 0)
     {
         pmw3901mb_interface_debug_print("pmw3901mb: shutdown failed.\n");
-        pmw3901mb_deinit(&gs_handle);
+        (void)pmw3901mb_deinit(&gs_handle);
         
         return 1;
     }
@@ -403,7 +403,7 @@ uint8_t pmw3901mb_register_test(void)
     
     /* finish the register test */
     pmw3901mb_interface_debug_print("pmw3901mb: finish the register test.\n");
-    pmw3901mb_deinit(&gs_handle);
+    (void)pmw3901mb_deinit(&gs_handle);
     
     return 0;
 }

@@ -7,6 +7,6 @@ var group__pmw3901mb__example__driver =
     [ "pmw3901mb_frame_init", "group__pmw3901mb__example__driver.html#gab5c2e52cd5a2a5ad280a5aa2d3209fc1", null ],
     [ "pmw3901mb_frame_read", "group__pmw3901mb__example__driver.html#ga71ba25f3746632df718eb44c0251aaf0", null ],
     [ "pmw3901mb_interrupt_deinit", "group__pmw3901mb__example__driver.html#ga1be0f40761ef111737da6b92f6e386c4", null ],
-    [ "pmw3901mb_interrupt_init", "group__pmw3901mb__example__driver.html#ga5c1fa677efbaa91be595792cb9da3903", null ],
+    [ "pmw3901mb_interrupt_init", "group__pmw3901mb__example__driver.html#ga894accdb0db6b5e955f472ed9e3e1d1b", null ],
     [ "pmw3901mb_interrupt_irq_handler", "group__pmw3901mb__example__driver.html#gafe036b69337c0f00be19891c5e285f62", null ]
 ];
