@@ -29,15 +29,15 @@ LibDriver PMW3901MB ist der voll funktionsfähige Treiber von pmw3901mb, der von
 
 /src enthält LibDriver PMW3901MB-Quelldateien.
 
-/interface enthält die plattformunabhängige Vorlage LibDriver PMW3901MB SPI。
+/interface enthält die plattformunabhängige Vorlage LibDriver PMW3901MB SPI.
 
-/test enthält den Testcode des LibDriver PMW3901MB-Treibers und dieser Code kann die erforderliche Funktion des Chips einfach testen。
+/test enthält den Testcode des LibDriver PMW3901MB-Treibers und dieser Code kann die erforderliche Funktion des Chips einfach testen.
 
 /example enthält LibDriver PMW3901MB-Beispielcode.
 
 /doc enthält das LibDriver PMW3901MB-Offlinedokument.
 
-/Datenblatt enthält PMW3901MB-Datenblatt。
+/Datenblatt enthält PMW3901MB-Datenblatt.
 
 /project enthält den allgemeinen Beispielcode für Linux- und MCU-Entwicklungsboards. Alle Projekte verwenden das Shell-Skript, um den Treiber zu debuggen, und die detaillierten Anweisungen finden Sie in der README.md jedes Projekts.
 
