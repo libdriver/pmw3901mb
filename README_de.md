@@ -52,6 +52,8 @@ Fügen Sie /src, /interface und /example zu Ihrem Projekt hinzu.
 #### example basic
 
 ```C
+#include "driver_pmw3901mb_basic.h"
+
 uint8_t res;
 float height;
 float delta_x;
@@ -118,6 +120,8 @@ return 0;
 #### example frame
 
 ```c
+#include "driver_pmw3901mb_frame.h"
+
 uint8_t res;
 uint32_t k, times;
 uint32_t i, j;
@@ -167,9 +171,11 @@ for (k = 0; k < times; k++)
 
 return 0;
 ```
-#### example frame
+#### example interrupt
 
 ```C
+#include "driver_pmw3901mb_interrupt.h"
+
 uint8_t res;
 uint32_t k, times;
 uint32_t i, j;
