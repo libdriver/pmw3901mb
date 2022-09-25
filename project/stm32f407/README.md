@@ -1,6 +1,6 @@
-### 1. chip
+### 1. Chip
 
-#### 1.1 chip info
+#### 1.1 Chip Info
 
 chip name : STM32F407ZGT6.
 
@@ -12,25 +12,25 @@ spi pin: SCK/MISO/MOSI/CS  PA5/PA6/PA7/PA4.
 
 reset pin: RESET PA8.
 
-int pin: INT PB0
+int pin: INT PB0.
 
-### 2. shell
+### 2. Shell
 
-#### 2.1 shell parameter
+#### 2.1 Shell Parameter
 
-baud rate: 115200
+baud rate: 115200.
 
-data bits : 8
+data bits : 8.
 
-stop bits: 1
+stop bits: 1.
 
-parity: none
+parity: none.
 
-flow control: none
+flow control: none.
 
-### 3. pmw3901mb
+### 3. PMW3901MB
 
-#### 3.1 command Instruction
+#### 3.1 Command Instruction
 
 ​           pmw3901mb is a basic command which can test all pmw3901mb driver function:
 
@@ -58,7 +58,7 @@ flow control: none
 
 ​           -c interrupt <times>        run pmw3901mb interrupt function. times is the test times.
 
-#### 3.2 command example
+#### 3.2 Command Example
 
 ```shell
 pmw3901mb -i
