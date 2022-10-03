@@ -52,6 +52,8 @@ LibDriver PMW3901MBは、LibDriverによって起動されたpmw3901mbの全機�
 #### example basic
 
 ```C
+#include "driver_pmw3901mb_basic.h"
+
 uint8_t res;
 float height;
 float delta_x;
@@ -118,6 +120,8 @@ return 0;
 #### example frame
 
 ```c
+#include "driver_pmw3901mb_frame.h"
+
 uint8_t res;
 uint32_t k, times;
 uint32_t i, j;
@@ -170,6 +174,8 @@ return 0;
 #### example interrupt
 
 ```C
+#include "driver_pmw3901mb_interrupt.h"
+
 uint8_t (*g_gpio_irq)(float height_m) = NULL;
 static uint8_t gs_flag;
 uint8_t res;

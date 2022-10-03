@@ -29,15 +29,15 @@ LibDriver PMW3901MB is the full function driver of pmw3901mb launched by LibDriv
 
 /src includes LibDriver PMW3901MB source files.
 
-/interface includes LibDriver PMW3901MB SPI platform independent template。
+/interface includes LibDriver PMW3901MB SPI platform independent template.
 
-/test includes LibDriver PMW3901MB driver test code and this code can test the chip necessary function simply。
+/test includes LibDriver PMW3901MB driver test code and this code can test the chip necessary function simply.
 
 /example includes LibDriver PMW3901MB sample code.
 
 /doc includes LibDriver PMW3901MB offline document.
 
-/datasheet includes PMW3901MB datasheet。
+/datasheet includes PMW3901MB datasheet.
 
 /project includes the common Linux and MCU development board sample code. All projects use the shell script to debug the driver and the detail instruction can be found in each project's README.md.
 
@@ -52,6 +52,8 @@ Add /src, /interface and /example to your project.
 #### example basic
 
 ```C
+#include "driver_pmw3901mb_basic.h"
+
 uint8_t res;
 float height;
 float delta_x;
@@ -118,6 +120,8 @@ return 0;
 #### example frame
 
 ```C
+#include "driver_pmw3901mb_frame.h"
+
 uint8_t res;
 uint32_t k, times;
 uint32_t i, j;
@@ -171,6 +175,8 @@ return 0;
 #### example interrupt
 
 ```C
+#include "driver_pmw3901mb_interrupt.h"
+
 uint8_t (*g_gpio_irq)(float height_m) = NULL;
 static uint8_t gs_flag;
 uint8_t res;
