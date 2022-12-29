@@ -119,8 +119,6 @@ uint8_t pmw3901mb_frame_test(uint32_t times)
         return 1;
     }
     
-    pmw3901mb_interface_debug_print("\n");
-    
     /* wait */
     while (times != 0)
     {
@@ -143,7 +141,12 @@ uint8_t pmw3901mb_frame_test(uint32_t times)
             }
             pmw3901mb_interface_debug_print("\n");
         }
-        pmw3901mb_interface_debug_print("\n");
+        
+        /* if the last */
+        if (times != 1)
+        {
+            pmw3901mb_interface_debug_print("\n");
+        }
         
         /* delay 1000 ms */
         pmw3901mb_interface_delay_ms(1000);

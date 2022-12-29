@@ -1645,7 +1645,7 @@ uint8_t pmw3901mb_set_optimum_performace(pmw3901mb_handle_t *handle)
 /**
  * @brief      get the product id
  * @param[in]  *handle points to a pmw3901mb handle structure
- * @param[out] *id points to a id buffer
+ * @param[out] *id points to an id buffer
  * @return     status code
  *             - 0 success
  *             - 1 get product id failed
@@ -1680,7 +1680,7 @@ uint8_t pmw3901mb_get_product_id(pmw3901mb_handle_t *handle, uint8_t *id)
 /**
  * @brief      get the inverse product id
  * @param[in]  *handle points to a pmw3901mb handle structure
- * @param[out] *id points to a id buffer
+ * @param[out] *id points to an id buffer
  * @return     status code
  *             - 0 success
  *             - 1 get inverse product id failed
@@ -1715,7 +1715,7 @@ uint8_t pmw3901mb_get_inverse_product_id(pmw3901mb_handle_t *handle, uint8_t *id
 /**
  * @brief      get the revison id
  * @param[in]  *handle points to a pmw3901mb handle structure
- * @param[out] *id points to a id buffer
+ * @param[out] *id points to an id buffer
  * @return     status code
  *             - 0 success
  *             - 1 get revison id failed
@@ -2203,7 +2203,7 @@ uint8_t pmw3901mb_get_shutter(pmw3901mb_handle_t *handle, uint16_t *shutter)
 /**
  * @brief      get the observation
  * @param[in]  *handle points to a pmw3901mb handle structure
- * @param[out] *observation points to a observation buffer
+ * @param[out] *observation points to an observation buffer
  * @return     status code
  *             - 0 success
  *             - 1 get observation failed

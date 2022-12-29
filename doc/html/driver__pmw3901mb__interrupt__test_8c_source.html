@@ -92,7 +92,7 @@ $(document).ready(function(){initNavTree('driver__pmw3901mb__interrupt__test_8c_
 <div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="driver__pmw3901mb__interrupt__test_8h.html">driver_pmw3901mb_interrupt_test.h</a>&quot;</span></div>
 <div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160; </div>
 <div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;<span class="keyword">static</span> <a class="code" href="structpmw3901mb__handle__s.html">pmw3901mb_handle_t</a> gs_handle;        </div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;<span class="keyword">static</span> uint8_t gs_flag;            </div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;<span class="keyword">static</span> <span class="keyword">volatile</span> uint8_t gs_flag;            </div>
 <div class="line"><a name="l00050"></a><span class="lineno"><a class="line" href="group__pmw3901mb__test__driver.html#gae74fa94fdc1df9feb54e7dffbd631c9d">   50</a></span>&#160;uint8_t <a class="code" href="group__pmw3901mb__test__driver.html#gae74fa94fdc1df9feb54e7dffbd631c9d">pmw3901mb_interrupt_test_irq_handler</a>(<span class="keywordtype">float</span> height_m)</div>
 <div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;{</div>
 <div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;    uint8_t res;</div>
@@ -141,7 +141,7 @@ $(document).ready(function(){initNavTree('driver__pmw3901mb__interrupt__test_8c_
 <div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;        <a class="code" href="group__pmw3901mb__interface__driver.html#ga169b0aa3af5ce82c943795ea3019e88c">pmw3901mb_interface_debug_print</a>(<span class="stringliteral">&quot;pmw3901mb: raw_min is 0x%02X.\n&quot;</span>, motion.<a class="code" href="structpmw3901mb__motion__s.html#ae4bf51bcd12f6a5bd0235c6bb75d4e4d">raw_min</a>);</div>
 <div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;        <a class="code" href="group__pmw3901mb__interface__driver.html#ga169b0aa3af5ce82c943795ea3019e88c">pmw3901mb_interface_debug_print</a>(<span class="stringliteral">&quot;pmw3901mb: observation is 0x%02X.\n&quot;</span>, motion.<a class="code" href="structpmw3901mb__motion__s.html#aefe131cefa9cb1b79b415298a5bd8447">observation</a>);</div>
 <div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;        <a class="code" href="group__pmw3901mb__interface__driver.html#ga169b0aa3af5ce82c943795ea3019e88c">pmw3901mb_interface_debug_print</a>(<span class="stringliteral">&quot;pmw3901mb: shutter is 0x%04X.\n&quot;</span>, motion.<a class="code" href="structpmw3901mb__motion__s.html#a924674adf15f56efbd59af7633cf7e01">shutter</a>);</div>
-<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;        <a class="code" href="group__pmw3901mb__interface__driver.html#ga169b0aa3af5ce82c943795ea3019e88c">pmw3901mb_interface_debug_print</a>(<span class="stringliteral">&quot;pmw3901mb: surface quality is 0x%04X.\n\n&quot;</span>, motion.<a class="code" href="structpmw3901mb__motion__s.html#ad2f2e356f39ffd210b63a6d7163426db">surface_quality</a>);</div>
+<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;        <a class="code" href="group__pmw3901mb__interface__driver.html#ga169b0aa3af5ce82c943795ea3019e88c">pmw3901mb_interface_debug_print</a>(<span class="stringliteral">&quot;pmw3901mb: surface quality is 0x%04X.\n&quot;</span>, motion.<a class="code" href="structpmw3901mb__motion__s.html#ad2f2e356f39ffd210b63a6d7163426db">surface_quality</a>);</div>
 <div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;        </div>
 <div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;        <span class="comment">/* set flag */</span></div>
 <div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;        gs_flag = 1;</div>
@@ -230,25 +230,23 @@ $(document).ready(function(){initNavTree('driver__pmw3901mb__interrupt__test_8c_
 <div class="line"><a name="l00192"></a><span class="lineno">  192</span>&#160;        <span class="keywordflow">return</span> 1;</div>
 <div class="line"><a name="l00193"></a><span class="lineno">  193</span>&#160;    }</div>
 <div class="line"><a name="l00194"></a><span class="lineno">  194</span>&#160;    </div>
-<div class="line"><a name="l00195"></a><span class="lineno">  195</span>&#160;    <a class="code" href="group__pmw3901mb__interface__driver.html#ga169b0aa3af5ce82c943795ea3019e88c">pmw3901mb_interface_debug_print</a>(<span class="stringliteral">&quot;\n&quot;</span>);</div>
-<div class="line"><a name="l00196"></a><span class="lineno">  196</span>&#160;    </div>
-<div class="line"><a name="l00197"></a><span class="lineno">  197</span>&#160;    <span class="comment">/* wait */</span></div>
-<div class="line"><a name="l00198"></a><span class="lineno">  198</span>&#160;    <span class="keywordflow">while</span> (times != 0)</div>
-<div class="line"><a name="l00199"></a><span class="lineno">  199</span>&#160;    {</div>
-<div class="line"><a name="l00200"></a><span class="lineno">  200</span>&#160;        gs_flag = 0x00;</div>
-<div class="line"><a name="l00201"></a><span class="lineno">  201</span>&#160;        <span class="keywordflow">while</span> (gs_flag == 0x00)</div>
-<div class="line"><a name="l00202"></a><span class="lineno">  202</span>&#160;        {</div>
-<div class="line"><a name="l00203"></a><span class="lineno">  203</span>&#160;            <a class="code" href="group__pmw3901mb__interface__driver.html#gac914284b3c0f745485430c3c75b7fd04">pmw3901mb_interface_delay_ms</a>(10);</div>
-<div class="line"><a name="l00204"></a><span class="lineno">  204</span>&#160;        }</div>
-<div class="line"><a name="l00205"></a><span class="lineno">  205</span>&#160;        times--;</div>
-<div class="line"><a name="l00206"></a><span class="lineno">  206</span>&#160;    }</div>
-<div class="line"><a name="l00207"></a><span class="lineno">  207</span>&#160;    </div>
-<div class="line"><a name="l00208"></a><span class="lineno">  208</span>&#160;    <span class="comment">/* finish the interrupt test */</span></div>
-<div class="line"><a name="l00209"></a><span class="lineno">  209</span>&#160;    <a class="code" href="group__pmw3901mb__interface__driver.html#ga169b0aa3af5ce82c943795ea3019e88c">pmw3901mb_interface_debug_print</a>(<span class="stringliteral">&quot;pmw3901mb: finish the interrupt test.\n&quot;</span>);</div>
-<div class="line"><a name="l00210"></a><span class="lineno">  210</span>&#160;    (void)<a class="code" href="group__pmw3901mb__basic__driver.html#gae6e86f9e7e32d488c1786df0b076fa9d">pmw3901mb_deinit</a>(&amp;gs_handle);</div>
-<div class="line"><a name="l00211"></a><span class="lineno">  211</span>&#160;    </div>
-<div class="line"><a name="l00212"></a><span class="lineno">  212</span>&#160;    <span class="keywordflow">return</span> 0;</div>
-<div class="line"><a name="l00213"></a><span class="lineno">  213</span>&#160;}</div>
+<div class="line"><a name="l00195"></a><span class="lineno">  195</span>&#160;    <span class="comment">/* wait */</span></div>
+<div class="line"><a name="l00196"></a><span class="lineno">  196</span>&#160;    <span class="keywordflow">while</span> (times != 0)</div>
+<div class="line"><a name="l00197"></a><span class="lineno">  197</span>&#160;    {</div>
+<div class="line"><a name="l00198"></a><span class="lineno">  198</span>&#160;        gs_flag = 0x00;</div>
+<div class="line"><a name="l00199"></a><span class="lineno">  199</span>&#160;        <span class="keywordflow">while</span> (gs_flag == 0x00)</div>
+<div class="line"><a name="l00200"></a><span class="lineno">  200</span>&#160;        {</div>
+<div class="line"><a name="l00201"></a><span class="lineno">  201</span>&#160;            <a class="code" href="group__pmw3901mb__interface__driver.html#gac914284b3c0f745485430c3c75b7fd04">pmw3901mb_interface_delay_ms</a>(10);</div>
+<div class="line"><a name="l00202"></a><span class="lineno">  202</span>&#160;        }</div>
+<div class="line"><a name="l00203"></a><span class="lineno">  203</span>&#160;        times--;</div>
+<div class="line"><a name="l00204"></a><span class="lineno">  204</span>&#160;    }</div>
+<div class="line"><a name="l00205"></a><span class="lineno">  205</span>&#160;    </div>
+<div class="line"><a name="l00206"></a><span class="lineno">  206</span>&#160;    <span class="comment">/* finish the interrupt test */</span></div>
+<div class="line"><a name="l00207"></a><span class="lineno">  207</span>&#160;    <a class="code" href="group__pmw3901mb__interface__driver.html#ga169b0aa3af5ce82c943795ea3019e88c">pmw3901mb_interface_debug_print</a>(<span class="stringliteral">&quot;pmw3901mb: finish the interrupt test.\n&quot;</span>);</div>
+<div class="line"><a name="l00208"></a><span class="lineno">  208</span>&#160;    (void)<a class="code" href="group__pmw3901mb__basic__driver.html#gae6e86f9e7e32d488c1786df0b076fa9d">pmw3901mb_deinit</a>(&amp;gs_handle);</div>
+<div class="line"><a name="l00209"></a><span class="lineno">  209</span>&#160;    </div>
+<div class="line"><a name="l00210"></a><span class="lineno">  210</span>&#160;    <span class="keywordflow">return</span> 0;</div>
+<div class="line"><a name="l00211"></a><span class="lineno">  211</span>&#160;}</div>
 <div class="ttc" id="adriver__pmw3901mb__interrupt__test_8h_html"><div class="ttname"><a href="driver__pmw3901mb__interrupt__test_8h.html">driver_pmw3901mb_interrupt_test.h</a></div><div class="ttdoc">driver pmw3901mb interrupt test header file</div></div>
 <div class="ttc" id="agroup__pmw3901mb__basic__driver_html_ga0059aa37a4744fa6cf395d241799f43b"><div class="ttname"><a href="group__pmw3901mb__basic__driver.html#ga0059aa37a4744fa6cf395d241799f43b">pmw3901mb_init</a></div><div class="ttdeci">uint8_t pmw3901mb_init(pmw3901mb_handle_t *handle)</div><div class="ttdoc">initialize the chip</div><div class="ttdef"><b>Definition:</b> <a href="driver__pmw3901mb_8c_source.html#l00133">driver_pmw3901mb.c:133</a></div></div>
 <div class="ttc" id="agroup__pmw3901mb__basic__driver_html_ga2a0bb05892272fda645496d0a2814f9d"><div class="ttname"><a href="group__pmw3901mb__basic__driver.html#ga2a0bb05892272fda645496d0a2814f9d">pmw3901mb_set_motion</a></div><div class="ttdeci">uint8_t pmw3901mb_set_motion(pmw3901mb_handle_t *handle, uint8_t motion)</div><div class="ttdoc">set the motion</div><div class="ttdef"><b>Definition:</b> <a href="driver__pmw3901mb_8c_source.html#l01868">driver_pmw3901mb.c:1868</a></div></div>

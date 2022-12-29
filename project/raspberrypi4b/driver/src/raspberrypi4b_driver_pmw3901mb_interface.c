@@ -48,7 +48,7 @@
 /**
  * @brief spi device hanble definition
  */
-static int gs_spi_fd;                       /**< spi handle */
+static int gs_fd;                           /**< spi handle */
 
 /**
  * @brief  interface spi bus init
@@ -59,7 +59,7 @@ static int gs_spi_fd;                       /**< spi handle */
  */
 uint8_t pmw3901mb_interface_spi_init(void)
 {
-    return spi_init(SPI_DEVICE_NAME, &gs_spi_fd, SPI_MODE_TYPE_0, 1000 * 1000 * 2);
+    return spi_init(SPI_DEVICE_NAME, &gs_fd, SPI_MODE_TYPE_0, 1000 * 1000 * 2);
 }
 
 /**
@@ -71,7 +71,7 @@ uint8_t pmw3901mb_interface_spi_init(void)
  */
 uint8_t pmw3901mb_interface_spi_deinit(void)
 {   
-    return spi_deinit(gs_spi_fd);
+    return spi_deinit(gs_fd);
 }
 
 /**
@@ -86,7 +86,7 @@ uint8_t pmw3901mb_interface_spi_deinit(void)
  */
 uint8_t pmw3901mb_interface_spi_read(uint8_t reg, uint8_t *buf, uint16_t len)
 {
-    return spi_read(gs_spi_fd, reg, buf, len);
+    return spi_read(gs_fd, reg, buf, len);
 }
 
 /**
@@ -101,7 +101,7 @@ uint8_t pmw3901mb_interface_spi_read(uint8_t reg, uint8_t *buf, uint16_t len)
  */
 uint8_t pmw3901mb_interface_spi_write(uint8_t reg, uint8_t *buf, uint16_t len)
 {
-    return spi_write(gs_spi_fd, reg, buf, len);
+    return spi_write(gs_fd, reg, buf, len);
 }
 
 /**
@@ -162,7 +162,7 @@ void pmw3901mb_interface_debug_print(const char *const fmt, ...)
     uint8_t len;
     va_list args;
     
-    memset((char *)str, 0, sizeof(char)*256); 
+    memset((char *)str, 0, sizeof(char) * 256); 
     va_start(args, fmt);
     vsnprintf((char *)str, 256, (char const *)fmt, args);
     va_end(args);

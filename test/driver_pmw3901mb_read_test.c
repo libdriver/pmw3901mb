@@ -118,8 +118,6 @@ uint8_t pmw3901mb_read_test(float height_m, uint32_t times)
         return 1;
     }
     
-    pmw3901mb_interface_debug_print("\n");
-    
     /* wait */
     while (times != 0)
     {
@@ -166,7 +164,7 @@ uint8_t pmw3901mb_read_test(float height_m, uint32_t times)
             pmw3901mb_interface_debug_print("pmw3901mb: raw_min is 0x%02X.\n", motion.raw_min);
             pmw3901mb_interface_debug_print("pmw3901mb: observation is 0x%02X.\n", motion.observation);
             pmw3901mb_interface_debug_print("pmw3901mb: shutter is 0x%04X.\n", motion.shutter);
-            pmw3901mb_interface_debug_print("pmw3901mb: surface quality is 0x%04X.\n\n", motion.surface_quality);
+            pmw3901mb_interface_debug_print("pmw3901mb: surface quality is 0x%04X.\n", motion.surface_quality);
         }
         else
         {
@@ -184,4 +182,3 @@ uint8_t pmw3901mb_read_test(float height_m, uint32_t times)
     
     return 0;
 }
-
