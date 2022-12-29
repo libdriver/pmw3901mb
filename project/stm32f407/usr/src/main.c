@@ -46,15 +46,16 @@
 #include "delay.h"
 #include "gpio.h"
 #include "uart.h"
+#include "getopt.h"
 #include <stdlib.h>
 
 /**
  * @brief global var definition
  */
 uint8_t g_buf[256];                                  /**< uart buffer */
-uint16_t g_len;                                      /**< uart buffer length */
+volatile uint16_t g_len;                             /**< uart buffer length */
 uint8_t (*g_gpio_irq)(float height_m) = NULL;        /**< gpio irq */
-static uint8_t gs_flag;                     /**< inner flag */
+static volatile uint8_t gs_flag;                     /**< inner flag */
 static uint8_t gs_frame[35][35];                     /**< frame array */
 
 /**
@@ -75,7 +76,7 @@ void HAL_GPIO_EXTI_Callback(uint16_t pin)
 {
     if (pin == GPIO_PIN_0)
     {
-        if (g_gpio_irq)
+        if (g_gpio_irq != NULL)
         {
             g_gpio_irq(1.0f);
         }
@@ -102,7 +103,7 @@ static void a_callback(pmw3901mb_motion_t *motion, float delta_x, float delta_y)
         pmw3901mb_interface_debug_print("pmw3901mb: raw_min is 0x%02X.\n", motion->raw_min);
         pmw3901mb_interface_debug_print("pmw3901mb: observation is 0x%02X.\n", motion->observation);
         pmw3901mb_interface_debug_print("pmw3901mb: shutter is 0x%04X.\n", motion->shutter);
-        pmw3901mb_interface_debug_print("pmw3901mb: surface quality is 0x%04X.\n\n", motion->surface_quality);
+        pmw3901mb_interface_debug_print("pmw3901mb: surface quality is 0x%04X.\n", motion->surface_quality);
         
         /* set flag */
         gs_flag = 1;
@@ -121,330 +122,401 @@ static void a_callback(pmw3901mb_motion_t *motion, float delta_x, float delta_y)
  */
 uint8_t pmw3901mb(uint8_t argc, char **argv)
 {
+    int c;
+    int longindex = 0;
+    const char short_options[] = "hipe:t:";
+    const struct option long_options[] =
+    {
+        {"help", no_argument, NULL, 'h'},
+        {"information", no_argument, NULL, 'i'},
+        {"port", no_argument, NULL, 'p'},
+        {"example", required_argument, NULL, 'e'},
+        {"test", required_argument, NULL, 't'},
+        {"height", required_argument, NULL, 1},
+        {"times", required_argument, NULL, 2},
+        {NULL, 0, NULL, 0},
+    };
+    char type[32] = "unknow";
+    uint32_t times = 3;
+    float height = 1.0f;
+    
+    /* if no params */
     if (argc == 1)
     {
+        /* goto the help */
         goto help;
     }
-    else if (argc == 2)
+    
+    /* init 0 */
+    optind = 0;
+    
+    /* parse */
+    do
     {
-        if (strcmp("-i", argv[1]) == 0)
+        /* parse the args */
+        c = getopt_long(argc, argv, short_options, long_options, &longindex);
+        
+        /* judge the result */
+        switch (c)
         {
-            pmw3901mb_info_t info;
+            /* help */
+            case 'h' :
+            {
+                /* set the type */
+                memset(type, 0, sizeof(char) * 32);
+                snprintf(type, 32, "h");
+                
+                break;
+            }
             
-            /* print pmw3901mb info */
-            pmw3901mb_info(&info);
-            pmw3901mb_interface_debug_print("pmw3901mb: chip is %s.\n", info.chip_name);
-            pmw3901mb_interface_debug_print("pmw3901mb: manufacturer is %s.\n", info.manufacturer_name);
-            pmw3901mb_interface_debug_print("pmw3901mb: interface is %s.\n", info.interface);
-            pmw3901mb_interface_debug_print("pmw3901mb: driver version is %d.%d.\n", info.driver_version / 1000, (info.driver_version % 1000)/100);
-            pmw3901mb_interface_debug_print("pmw3901mb: min supply voltage is %0.1fV.\n", info.supply_voltage_min_v);
-            pmw3901mb_interface_debug_print("pmw3901mb: max supply voltage is %0.1fV.\n", info.supply_voltage_max_v);
-            pmw3901mb_interface_debug_print("pmw3901mb: max current is %0.2fmA.\n", info.max_current_ma);
-            pmw3901mb_interface_debug_print("pmw3901mb: max temperature is %0.1fC.\n", info.temperature_max);
-            pmw3901mb_interface_debug_print("pmw3901mb: min temperature is %0.1fC.\n", info.temperature_min);
+            /* information */
+            case 'i' :
+            {
+                /* set the type */
+                memset(type, 0, sizeof(char) * 32);
+                snprintf(type, 32, "i");
+                
+                break;
+            }
             
-            return 0;
+            /* port */
+            case 'p' :
+            {
+                /* set the type */
+                memset(type, 0, sizeof(char) * 32);
+                snprintf(type, 32, "p");
+                
+                break;
+            }
+            
+            /* example */
+            case 'e' :
+            {
+                /* set the type */
+                memset(type, 0, sizeof(char) * 32);
+                snprintf(type, 32, "e_%s", optarg);
+                
+                break;
+            }
+            
+            /* test */
+            case 't' :
+            {
+                /* set the type */
+                memset(type, 0, sizeof(char) * 32);
+                snprintf(type, 32, "t_%s", optarg);
+                
+                break;
+            }
+            
+            /* height */
+            case 1 :
+            {
+                /* set the height */
+                height = atof(optarg);
+                
+                break;
+            } 
+
+            /* running times */
+            case 2 :
+            {
+                /* set the times */
+                times = atol(optarg);
+                
+                break;
+            } 
+            
+            /* the end */
+            case -1 :
+            {
+                break;
+            }
+            
+            /* others */
+            default :
+            {
+                return 5;
+            }
         }
-        else if (strcmp("-p", argv[1]) == 0)
-        {
-            /* print pin connection */
-            pmw3901mb_interface_debug_print("pmw3901mb: SCK connected to GPIOA PIN5.\n");
-            pmw3901mb_interface_debug_print("pmw3901mb: MISO connected to GPIOA PIN6.\n");
-            pmw3901mb_interface_debug_print("pmw3901mb: MOSI connected to GPIOA PIN7.\n");
-            pmw3901mb_interface_debug_print("pmw3901mb: CS connected to GPIOA PIN4.\n");
-            pmw3901mb_interface_debug_print("pmw3901mb: RESET connected to GPIOA PIN8.\n");
-            pmw3901mb_interface_debug_print("pmw3901mb: INT connected to GPIOB PIN0.\n");
-            
-            return 0;
-        }
-        else if (strcmp("-h", argv[1]) == 0)
-        {
-            /* show pmw3901mb help */
-            
-            help:
-            
-            pmw3901mb_interface_debug_print("pmw3901mb -i\n\tshow pmw3901mb chip and driver information.\n");
-            pmw3901mb_interface_debug_print("pmw3901mb -h\n\tshow pmw3901mb help.\n");
-            pmw3901mb_interface_debug_print("pmw3901mb -p\n\tshow pmw3901mb pin connections of the current board.\n");
-            pmw3901mb_interface_debug_print("pmw3901mb -t reg\n\trun pmw3901mb register test.\n");
-            pmw3901mb_interface_debug_print("pmw3901mb -t read <height> <times>\n\trun pmw3901mb read test.height is the chip height.times is the test times.\n");
-            pmw3901mb_interface_debug_print("pmw3901mb -t frame <times>\n\trun pmw3901mb frame capture test.times is the test times.\n");
-            pmw3901mb_interface_debug_print("pmw3901mb -t interrupt <times>\n\trun pmw3901mb interrupt test.times is the test times.\n");
-            pmw3901mb_interface_debug_print("pmw3901mb -c read <height> <times>\n\trun pmw3901mb read function.height is the chip height.times is the test times.\n");
-            pmw3901mb_interface_debug_print("pmw3901mb -c frame <times>\n\trun pmw3901mb frame capture function.times is the test times.\n");
-            pmw3901mb_interface_debug_print("pmw3901mb -c interrupt <times>\n\trun pmw3901mb interrupt function.times is the test times.\n");
-            
-            return 0;
-        }
-        else
-        {
-            return 5;
-        }
-    }
-    else if (argc == 3)
+    } while (c != -1);
+
+    /* run the function */
+    if (strcmp("t_reg", type) == 0)
     {
-        /* run test */
-        if (strcmp("-t", argv[1]) == 0)
+        uint8_t res;
+        
+        res = pmw3901mb_register_test();
+        if (res != 0)
         {
-            /* reg test */
-            if (strcmp("reg", argv[2]) == 0)
+            return 1;
+        }
+        
+        return 0;
+    }
+    else if (strcmp("t_read", type) == 0)
+    {
+        uint8_t res;
+        
+        res = pmw3901mb_read_test(height, times);
+        if (res != 0)
+        {
+            return 1;
+        }
+        
+        return 0;
+    }
+    else if (strcmp("t_frame", type) == 0)
+    {
+        uint8_t res;
+        
+        res = pmw3901mb_frame_test(times);
+        if (res != 0)
+        {
+            return 1;
+        }
+        
+        return 0;
+    }
+    else if (strcmp("t_int", type) == 0)
+    {
+        uint8_t res;
+        
+        /* gpio init */
+        res = gpio_interrupt_init();
+        if (res != 0)
+        {
+            return 1;
+        }
+        
+        /* set interrupt irq */
+        g_gpio_irq = pmw3901mb_interrupt_test_irq_handler;
+        
+        /* run the interrupt test */
+        res = pmw3901mb_interrupt_test(times);
+        if (res != 0)
+        {
+            (void)gpio_interrupt_deinit();
+            g_gpio_irq = NULL;
+            
+            return 1;
+        }
+        
+        /* gpio deinit */
+        (void)gpio_interrupt_deinit();
+        g_gpio_irq = NULL;
+        
+        return 0;
+    }
+    else if (strcmp("e_read", type) == 0)
+    {
+        uint8_t res;
+        float delta_x;
+        float delta_y;
+        uint32_t i;
+        pmw3901mb_motion_t motion;
+        
+        /* basic init */
+        res = pmw3901mb_basic_init();
+        if (res != 0)
+        {
+            return 1;
+        }
+        
+        /* loop */
+        for (i = 0; i < times; i++)
+        {
+            read:
+            /* read data */
+            res = pmw3901mb_basic_read(height, &motion, (float *)&delta_x, (float *)&delta_y);
+            if (res != 0)
             {
-                uint8_t res;
+                (void)pmw3901mb_basic_deinit();
                 
-                res = pmw3901mb_register_test();
-                if (res != 0)
-                {
-                    return 1;
-                }
-                
-                return 0;
+                return 1;
             }
             
-            /* param is invalid */
+            /* check the result */
+            if (motion.is_valid == 1)
+            {
+                /* print the result */
+                
+                pmw3901mb_interface_debug_print("pmw3901mb: %d/%d.\n", i + 1, times);
+                pmw3901mb_interface_debug_print("pmw3901mb: delta_x: %0.3fcm delta_y: %0.3fcm.\n", delta_x, delta_y);
+                pmw3901mb_interface_debug_print("pmw3901mb: raw_average is 0x%02X.\n", motion.raw_average);
+                pmw3901mb_interface_debug_print("pmw3901mb: raw_max is 0x%02X.\n", motion.raw_max);
+                pmw3901mb_interface_debug_print("pmw3901mb: raw_min is 0x%02X.\n", motion.raw_min);
+                pmw3901mb_interface_debug_print("pmw3901mb: observation is 0x%02X.\n", motion.observation);
+                pmw3901mb_interface_debug_print("pmw3901mb: shutter is 0x%04X.\n", motion.shutter);
+                pmw3901mb_interface_debug_print("pmw3901mb: surface quality is 0x%04X.\n", motion.surface_quality);
+            }
             else
             {
-                return 5;
+                /* delay 500ms */
+                pmw3901mb_interface_delay_ms(500);
+                
+                goto read;
             }
+            
+            /* delay 1000 ms */
+            pmw3901mb_interface_delay_ms(1000);
         }
-        /* param is invalid */
-        else
-        {
-            return 5;
-        }
+        
+        /* basic deinit */
+        (void)pmw3901mb_basic_deinit();
+        
+        return 0;
     }
-    else if (argc == 4)
+    else if (strcmp("e_frame", type) == 0)
     {
-        /* run the test */
-        if (strcmp("-t", argv[1]) == 0)
+        uint8_t res;
+        uint32_t k;
+        uint32_t i;
+        uint32_t j;
+        
+        /* frame init */
+        res = pmw3901mb_frame_init();
+        if (res != 0)
         {
-            if (strcmp("frame", argv[2]) == 0)
-            {
-                uint8_t res;
-                
-                res = pmw3901mb_frame_test(atoi(argv[3]));
-                if (res != 0)
-                {
-                    return 1;
-                }
-                
-                return 0;
-            }
-            else if (strcmp("interrupt", argv[2]) == 0)
-            {
-                uint8_t res;
-                
-                res = gpio_interrupt_init();
-                if (res != 0)
-                {
-                    return 1;
-                }
-                g_gpio_irq = pmw3901mb_interrupt_test_irq_handler;
-                res = pmw3901mb_interrupt_test(atoi(argv[3]));
-                if (res != 0)
-                {
-                    (void)gpio_interrupt_deinit();
-                    g_gpio_irq = NULL;
-                    
-                    return 1;
-                }
-                (void)gpio_interrupt_deinit();
-                g_gpio_irq = NULL;
-                
-                return 0;
-            }
-            /* param is invalid */
-            else
-            {
-                return 5;
-            }
+            return 1;
         }
-        /* run the function */
-        else if (strcmp("-c", argv[1]) == 0)
+        
+        /* loop */
+        for (k = 0; k < times; k++)
         {
-            if (strcmp("frame", argv[2]) == 0)
+            /* read data */
+            res = pmw3901mb_frame_read(gs_frame);
+            if (res != 0)
             {
-                uint8_t res;
-                uint32_t k, times;
-                uint32_t i, j;
+                (void)pmw3901mb_frame_deinit();
                 
-                times = atoi(argv[3]);
-                res = pmw3901mb_frame_init();
-                if (res != 0)
-                {
-                    return 1;
-                }
-                
-                for (k = 0; k < times; k++)
-                {
-                    res = pmw3901mb_frame_read(gs_frame);
-                    if (res != 0)
-                    {
-                        (void)pmw3901mb_frame_deinit();
-                        
-                        return 1;
-                    }
-                    
-                    pmw3901mb_interface_debug_print("pmw3901mb: %d/%d.\n", k + 1, times);
-                    /* print frame */
-                    for (i = 0; i < 35; i++)
-                    {
-                        for (j = 0; j < 35; j++)
-                        {
-                            pmw3901mb_interface_debug_print("0x%02X ", gs_frame[i][j]);
-                        }
-                        pmw3901mb_interface_debug_print("\n");
-                    }
-                    pmw3901mb_interface_debug_print("\n");
-                    
-                    /* delay 1000 ms */
-                    pmw3901mb_interface_delay_ms(1000);
-                }
-                
-                return pmw3901mb_frame_deinit();
+                return 1;
             }
-            else if (strcmp("interrupt", argv[2]) == 0)
+            
+            /* read data */
+            pmw3901mb_interface_debug_print("pmw3901mb: %d/%d.\n", k + 1, times);
+            
+            /* print frame */
+            for (i = 0; i < 35; i++)
             {
-                uint8_t res;
-                uint32_t i, times;
-                
-                times = atoi(argv[3]);
-                res = gpio_interrupt_init();
-                if (res != 0)
+                for (j = 0; j < 35; j++)
                 {
-                    return 1;
+                    pmw3901mb_interface_debug_print("0x%02X ", gs_frame[i][j]);
                 }
-                g_gpio_irq = pmw3901mb_interrupt_irq_handler;
-                
-                res = pmw3901mb_interrupt_init(a_callback);
-                if (res != 0)
-                {
-                    (void)pmw3901mb_interrupt_deinit();
-                    
-                    return 1;
-                }
-                for (i = 0; i < times; i++)
-                {
-                    pmw3901mb_interface_debug_print("pmw3901mb: %d/%d.\n", i + 1, times);
-                    
-                    gs_flag = 0;
-                    while (gs_flag == 0)
-                    {
-                        pmw3901mb_interface_delay_ms(10);
-                    }
-                }
-                
-                (void)pmw3901mb_interrupt_deinit();
-                (void)gpio_interrupt_deinit();
-                g_gpio_irq = NULL;
-                
-                return 0;
+                pmw3901mb_interface_debug_print("\n");
             }
-            /* param is invalid */
-            else
-            {
-                return 5;
-            }
+            
+            /* delay 1000 ms */
+            pmw3901mb_interface_delay_ms(1000);
         }
-        /* param is invalid */
-        else
-        {
-            return 5;
-        }
+        
+        (void)pmw3901mb_frame_deinit();
+        
+        return 0;
     }
-    else if (argc == 5)
+    else if (strcmp("e_int", type) == 0)
     {
-        /* run the test */
-        if (strcmp("-t", argv[1]) == 0)
+        uint8_t res;
+        uint32_t i;
+        
+        /* gpio init */
+        res = gpio_interrupt_init();
+        if (res != 0)
         {
-            if (strcmp("read", argv[2]) == 0)
+            return 1;
+        }
+        
+        /* set the interrupt irq */
+        g_gpio_irq = pmw3901mb_interrupt_irq_handler;
+        
+        /* interrupt init */
+        res = pmw3901mb_interrupt_init(a_callback);
+        if (res != 0)
+        {
+            (void)pmw3901mb_interrupt_deinit();
+            
+            return 1;
+        }
+        
+        /* loop */
+        for (i = 0; i < times; i++)
+        {
+            /* output */
+            pmw3901mb_interface_debug_print("pmw3901mb: %d/%d.\n", i + 1, times);
+            
+            /* check the flag */
+            gs_flag = 0;
+            while (gs_flag == 0)
             {
-                uint8_t res;
-                
-                res = pmw3901mb_read_test((float)atof(argv[3]), atoi(argv[4]));
-                if (res != 0)
-                {
-                    return 1;
-                }
-                
-                return 0;
-            }
-            /* param is invalid */
-            else
-            {
-                return 5;
+                pmw3901mb_interface_delay_ms(10);
             }
         }
-        /* run the function */
-        else if (strcmp("-c", argv[1]) == 0)
-        {
-            if (strcmp("read", argv[2]) == 0)
-            {
-                uint8_t res;
-                float height;
-                float delta_x;
-                float delta_y;
-                uint32_t i, times;
-                pmw3901mb_motion_t motion;
-                
-                height = (float)atof(argv[3]);
-                times = atoi(argv[4]);
-                res = pmw3901mb_basic_init();
-                if (res != 0)
-                {
-                    return 1;
-                }
-                for (i = 0; i < times; i++)
-                {
-                    read:
-                    
-                    res = pmw3901mb_basic_read(height, &motion, (float *)&delta_x, (float *)&delta_y);
-                    if (res != 0)
-                    {
-                        (void)pmw3901mb_basic_deinit();
-                        
-                        return 1;
-                    }
-                    
-                    /* check the result */
-                    if (motion.is_valid == 1)
-                    {
-                        /* print the result */
-                        
-                        pmw3901mb_interface_debug_print("pmw3901mb: %d/%d.\n", i + 1, times);
-                        pmw3901mb_interface_debug_print("pmw3901mb: delta_x: %0.3fcm delta_y: %0.3fcm.\n", delta_x, delta_y);
-                        pmw3901mb_interface_debug_print("pmw3901mb: raw_average is 0x%02X.\n", motion.raw_average);
-                        pmw3901mb_interface_debug_print("pmw3901mb: raw_max is 0x%02X.\n", motion.raw_max);
-                        pmw3901mb_interface_debug_print("pmw3901mb: raw_min is 0x%02X.\n", motion.raw_min);
-                        pmw3901mb_interface_debug_print("pmw3901mb: observation is 0x%02X.\n", motion.observation);
-                        pmw3901mb_interface_debug_print("pmw3901mb: shutter is 0x%04X.\n", motion.shutter);
-                        pmw3901mb_interface_debug_print("pmw3901mb: surface quality is 0x%04X.\n\n", motion.surface_quality);
-                    }
-                    else
-                    {
-                        pmw3901mb_interface_delay_ms(500);
-                        
-                        goto read;
-                    }
-                    
-                    /* delay 1000 ms */
-                    pmw3901mb_interface_delay_ms(1000);
-                }
-                
-                return pmw3901mb_basic_deinit();
-            }
-            /* param is invalid */
-            else
-            {
-                return 5;
-            }
-        }
-        /* param is invalid */
-        else
-        {
-            return 5;
-        }
+        
+        /* deinit */
+        (void)pmw3901mb_interrupt_deinit();
+        (void)gpio_interrupt_deinit();
+        g_gpio_irq = NULL;
+        
+        return 0;
     }
-    /* param is invalid */
+    else if (strcmp("h", type) == 0)
+    {
+        help:
+        pmw3901mb_interface_debug_print("Usage:\n");
+        pmw3901mb_interface_debug_print("  pmw3901mb (-i | --information)\n");
+        pmw3901mb_interface_debug_print("  pmw3901mb (-h | --help)\n");
+        pmw3901mb_interface_debug_print("  pmw3901mb (-p | --port)\n");
+        pmw3901mb_interface_debug_print("  pmw3901mb (-t reg | --test=reg)\n");
+        pmw3901mb_interface_debug_print("  pmw3901mb (-t read | --test=read) [--height=<m>] [--times=<num>]\n");
+        pmw3901mb_interface_debug_print("  pmw3901mb (-t frame | --test=frame) [--times=<num>]\n");
+        pmw3901mb_interface_debug_print("  pmw3901mb (-t int | --test=int) [--times=<num>]\n");
+        pmw3901mb_interface_debug_print("  pmw3901mb (-e read | --example=read) [--height=<m>] [--times=<num>]\n");
+        pmw3901mb_interface_debug_print("  pmw3901mb (-e frame | --example=frame) [--times=<num>]\n");
+        pmw3901mb_interface_debug_print("  pmw3901mb (-e int | --example=int) [--times=<num>]\n");
+        pmw3901mb_interface_debug_print("\n");
+        pmw3901mb_interface_debug_print("Options:\n");
+        pmw3901mb_interface_debug_print("  -e <read | frame | int>, --example=<read | frame | int>\n");
+        pmw3901mb_interface_debug_print("                              Run the driver example.\n");
+        pmw3901mb_interface_debug_print("  -h, --help                  Show the help.\n");
+        pmw3901mb_interface_debug_print("      --height=<m>            Set the chip height in m.([default: 1.0])\n");
+        pmw3901mb_interface_debug_print("  -i, --information           Show the chip information.\n");
+        pmw3901mb_interface_debug_print("  -p, --port                  Display the pin connections of the current board.\n");
+        pmw3901mb_interface_debug_print("  -t <reg | read | frame | int>, --test=<reg | read | frame | int>\n");
+        pmw3901mb_interface_debug_print("                              Run the driver test.\n");
+        pmw3901mb_interface_debug_print("      --times=<num>           Set the running times.([default: 3])\n");
+        
+        return 0;
+    }
+    else if (strcmp("i", type) == 0)
+    {
+        pmw3901mb_info_t info;
+        
+        /* print pmw3901mb info */
+        pmw3901mb_info(&info);
+        pmw3901mb_interface_debug_print("pmw3901mb: chip is %s.\n", info.chip_name);
+        pmw3901mb_interface_debug_print("pmw3901mb: manufacturer is %s.\n", info.manufacturer_name);
+        pmw3901mb_interface_debug_print("pmw3901mb: interface is %s.\n", info.interface);
+        pmw3901mb_interface_debug_print("pmw3901mb: driver version is %d.%d.\n", info.driver_version / 1000, (info.driver_version % 1000) / 100);
+        pmw3901mb_interface_debug_print("pmw3901mb: min supply voltage is %0.1fV.\n", info.supply_voltage_min_v);
+        pmw3901mb_interface_debug_print("pmw3901mb: max supply voltage is %0.1fV.\n", info.supply_voltage_max_v);
+        pmw3901mb_interface_debug_print("pmw3901mb: max current is %0.2fmA.\n", info.max_current_ma);
+        pmw3901mb_interface_debug_print("pmw3901mb: max temperature is %0.1fC.\n", info.temperature_max);
+        pmw3901mb_interface_debug_print("pmw3901mb: min temperature is %0.1fC.\n", info.temperature_min);
+        
+        return 0;
+    }
+    else if (strcmp("p", type) == 0)
+    {
+        /* print pin connection */
+        pmw3901mb_interface_debug_print("pmw3901mb: SCK connected to GPIOA PIN5.\n");
+        pmw3901mb_interface_debug_print("pmw3901mb: MISO connected to GPIOA PIN6.\n");
+        pmw3901mb_interface_debug_print("pmw3901mb: MOSI connected to GPIOA PIN7.\n");
+        pmw3901mb_interface_debug_print("pmw3901mb: CS connected to GPIOA PIN4.\n");
+        pmw3901mb_interface_debug_print("pmw3901mb: RESET connected to GPIOA PIN8.\n");
+        pmw3901mb_interface_debug_print("pmw3901mb: INT connected to GPIOB PIN0.\n");
+        
+        return 0;
+    }
     else
     {
         return 5;
@@ -465,19 +537,19 @@ int main(void)
     /* delay init */
     delay_init();
     
-    /* uart1 init */
-    uart1_init(115200);
+    /* uart init */
+    uart_init(115200);
     
     /* shell init && register pmw3901mb fuction */
     shell_init();
     shell_register("pmw3901mb", pmw3901mb);
-    uart1_print("pmw3901mb: welcome to libdriver pmw3901mb.\n");
+    uart_print("pmw3901mb: welcome to libdriver pmw3901mb.\n");
     
     while (1)
     {
         /* read uart */
-        g_len = uart1_read(g_buf, 256);
-        if (g_len)
+        g_len = uart_read(g_buf, 256);
+        if (g_len != 0)
         {
             /* run shell */
             res = shell_parse((char *)g_buf, g_len);
@@ -487,29 +559,29 @@ int main(void)
             }
             else if (res == 1)
             {
-                uart1_print("pmw3901mb: run failed.\n");
+                uart_print("pmw3901mb: run failed.\n");
             }
             else if (res == 2)
             {
-                uart1_print("pmw3901mb: unknow command.\n");
+                uart_print("pmw3901mb: unknow command.\n");
             }
             else if (res == 3)
             {
-                uart1_print("pmw3901mb: length is too long.\n");
+                uart_print("pmw3901mb: length is too long.\n");
             }
             else if (res == 4)
             {
-                uart1_print("pmw3901mb: pretreat failed.\n");
+                uart_print("pmw3901mb: pretreat failed.\n");
             }
             else if (res == 5)
             {
-                uart1_print("pmw3901mb: param is invalid.\n");
+                uart_print("pmw3901mb: param is invalid.\n");
             }
             else
             {
-                uart1_print("pmw3901mb: unknow status code.\n");
+                uart_print("pmw3901mb: unknow status code.\n");
             }
-            uart1_flush();
+            uart_flush();
         }
         delay_ms(100);
     }
