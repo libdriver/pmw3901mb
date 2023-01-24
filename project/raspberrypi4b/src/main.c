@@ -81,9 +81,9 @@ static void a_callback(pmw3901mb_motion_t *motion, float delta_x, float delta_y)
  * @param[in] argc is arg numbers
  * @param[in] **argv is the arg address
  * @return    status code
- *             - 0 success
- *             - 1 run failed
- *             - 5 param is invalid
+ *            - 0 success
+ *            - 1 run failed
+ *            - 5 param is invalid
  * @note      none
  */
 uint8_t pmw3901mb(uint8_t argc, char **argv)
