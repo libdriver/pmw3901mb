@@ -146,19 +146,19 @@ uint8_t pmw3901mb_register_test(void)
     }
     pmw3901mb_interface_debug_print("pmw3901mb: inverse product id 0x%02X.\n", id);
     
-    /* pmw3901mb_get_revison_id test */
-    pmw3901mb_interface_debug_print("pmw3901mb: pmw3901mb_get_revison_id test.\n");
+    /* pmw3901mb_get_revision_id test */
+    pmw3901mb_interface_debug_print("pmw3901mb: pmw3901mb_get_revision_id test.\n");
     
-    /* get revison id */
-    res = pmw3901mb_get_revison_id(&gs_handle, (uint8_t *)&id);
+    /* get revision id */
+    res = pmw3901mb_get_revision_id(&gs_handle, (uint8_t *)&id);
     if (res != 0)
     {
-        pmw3901mb_interface_debug_print("pmw3901mb: get revison id failed.\n");
+        pmw3901mb_interface_debug_print("pmw3901mb: get revision id failed.\n");
         (void)pmw3901mb_deinit(&gs_handle);
         
         return 1;
     }
-    pmw3901mb_interface_debug_print("pmw3901mb: get revison id 0x%02X.\n", id);
+    pmw3901mb_interface_debug_print("pmw3901mb: get revision id 0x%02X.\n", id);
     
     /* pmw3901mb_get_motion test */
     pmw3901mb_interface_debug_print("pmw3901mb: pmw3901mb_get_motion test.\n");

@@ -136,7 +136,7 @@ uint8_t pmw3901mb(uint8_t argc, char **argv)
         {"times", required_argument, NULL, 2},
         {NULL, 0, NULL, 0},
     };
-    char type[33] = "unknow";
+    char type[33] = "unknown";
     uint32_t times = 3;
     float height = 1.0f;
     
@@ -540,7 +540,7 @@ int main(void)
     /* uart init */
     uart_init(115200);
     
-    /* shell init && register pmw3901mb fuction */
+    /* shell init && register pmw3901mb function */
     shell_init();
     shell_register("pmw3901mb", pmw3901mb);
     uart_print("pmw3901mb: welcome to libdriver pmw3901mb.\n");
@@ -563,7 +563,7 @@ int main(void)
             }
             else if (res == 2)
             {
-                uart_print("pmw3901mb: unknow command.\n");
+                uart_print("pmw3901mb: unknown command.\n");
             }
             else if (res == 3)
             {
@@ -579,7 +579,7 @@ int main(void)
             }
             else
             {
-                uart_print("pmw3901mb: unknow status code.\n");
+                uart_print("pmw3901mb: unknown status code.\n");
             }
             uart_flush();
         }

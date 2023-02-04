@@ -102,7 +102,7 @@ uint8_t pmw3901mb(uint8_t argc, char **argv)
         {"times", required_argument, NULL, 2},
         {NULL, 0, NULL, 0},
     };
-    char type[33] = "unknow";
+    char type[33] = "unknown";
     uint32_t times = 3;
     float height = 1.0f;
     
@@ -516,7 +516,7 @@ int main(uint8_t argc, char **argv)
     }
     else
     {
-        pmw3901mb_interface_debug_print("pmw3901mb: unknow status code.\n");
+        pmw3901mb_interface_debug_print("pmw3901mb: unknown status code.\n");
     }
 
     return 0;

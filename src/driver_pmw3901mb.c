@@ -52,12 +52,12 @@
  * @brief chip register definition
  */
 #define PMW3901MB_REG_PRODUCT_ID                  0x00        /**< product id register */
-#define PMW3901MB_REG_REVISION_ID                 0x01        /**< revison id register */
+#define PMW3901MB_REG_REVISION_ID                 0x01        /**< revision id register */
 #define PMW3901MB_REG_MOTION                      0x02        /**< motion register */
 #define PMW3901MB_REG_DELTA_X_L                   0x03        /**< delta_x_l  register */
 #define PMW3901MB_REG_DELTA_X_H                   0x04        /**< delta_x_h register */
 #define PMW3901MB_REG_DELTA_Y_L                   0x05        /**< delta_y_l register */
-#define PMW3901MB_REG_DELTA_Y_H                   0x06        /**< dalta_y_h register */
+#define PMW3901MB_REG_DELTA_Y_H                   0x06        /**< delta_y_h register */
 #define PMW3901MB_REG_SQUAL                       0x07        /**< squal register */
 #define PMW3901MB_REG_RAW_DATA_SUM                0x08        /**< raw data sum register */
 #define PMW3901MB_REG_MAXIMUM_RAW_DATA            0x09        /**< maximum raw data register */
@@ -803,16 +803,16 @@ uint8_t pmw3901mb_get_frame(pmw3901mb_handle_t *handle, uint8_t frame[35][35])
 }
 
 /**
- * @brief     set the optimum performace
+ * @brief     set the optimum performance
  * @param[in] *handle points to a pmw3901mb handle structure
  * @return    status code
  *            - 0 success
- *            - 1 set optimum performace failed
+ *            - 1 set optimum performance failed
  *            - 2 handle is NULL
  *            - 3 handle is not initialized
  * @note      none
  */
-uint8_t pmw3901mb_set_optimum_performace(pmw3901mb_handle_t *handle)
+uint8_t pmw3901mb_set_optimum_performance(pmw3901mb_handle_t *handle)
 {
     uint8_t res;
     uint8_t cmd;
@@ -1713,17 +1713,17 @@ uint8_t pmw3901mb_get_inverse_product_id(pmw3901mb_handle_t *handle, uint8_t *id
 }
 
 /**
- * @brief      get the revison id
+ * @brief      get the revision id
  * @param[in]  *handle points to a pmw3901mb handle structure
  * @param[out] *id points to an id buffer
  * @return     status code
  *             - 0 success
- *             - 1 get revison id failed
+ *             - 1 get revision id failed
  *             - 2 handle is NULL
  *             - 3 handle is not initialized
  * @note       none
  */
-uint8_t pmw3901mb_get_revison_id(pmw3901mb_handle_t *handle, uint8_t *id)
+uint8_t pmw3901mb_get_revision_id(pmw3901mb_handle_t *handle, uint8_t *id)
 {
     uint8_t res;
     
@@ -1736,10 +1736,10 @@ uint8_t pmw3901mb_get_revison_id(pmw3901mb_handle_t *handle, uint8_t *id)
         return 3;                                                                          /* return error */
     }
     
-    res = a_pmw3901mb_spi_read(handle, PMW3901MB_REG_REVISION_ID, (uint8_t *)id, 1);       /* get revison id */
+    res = a_pmw3901mb_spi_read(handle, PMW3901MB_REG_REVISION_ID, (uint8_t *)id, 1);       /* get revision id */
     if (res != 0)                                                                          /* check result */
     {
-        handle->debug_print("pmw3901mb: get revison id failed.\n");                        /* get revison id failed */
+        handle->debug_print("pmw3901mb: get revision id failed.\n");                       /* get revision id failed */
        
         return 1;                                                                          /* return error */
     }
@@ -2493,7 +2493,7 @@ uint8_t pmw3901mb_info(pmw3901mb_info_t *info)
     info->max_current_ma = MAX_CURRENT;                             /* set maximum current */
     info->temperature_max = TEMPERATURE_MAX;                        /* set minimal temperature */
     info->temperature_min = TEMPERATURE_MIN;                        /* set maximum temperature */
-    info->driver_version = DRIVER_VERSION;                          /* set driver verison */
+    info->driver_version = DRIVER_VERSION;                          /* set driver version */
     
     return 0;                                                       /* success return 0 */
 }
