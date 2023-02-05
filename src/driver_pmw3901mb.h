@@ -70,7 +70,7 @@ typedef struct pmw3901mb_motion_s
     uint8_t raw_min;                 /**< raw min */
     uint8_t observation;             /**< observation */
     uint16_t shutter;                /**< shutter */
-    uint8_t is_valid;                /**< valid flag, 0 meas invalid, 1 meas invlaid, 2 meas inner errors */
+    uint8_t is_valid;                /**< valid flag, 0 meas invalid, 1 meas invalid, 2 meas inner errors */
 } pmw3901mb_motion_t;
 
 /**
@@ -282,16 +282,16 @@ uint8_t pmw3901mb_shutdown(pmw3901mb_handle_t *handle);
 uint8_t pmw3901mb_reset(pmw3901mb_handle_t *handle);
 
 /**
- * @brief     set the optimum performace
+ * @brief     set the optimum performance
  * @param[in] *handle points to a pmw3901mb handle structure
  * @return    status code
  *            - 0 success
- *            - 1 set optimum performace failed
+ *            - 1 set optimum performance failed
  *            - 2 handle is NULL
  *            - 3 handle is not initialized
  * @note      none
  */
-uint8_t pmw3901mb_set_optimum_performace(pmw3901mb_handle_t *handle);
+uint8_t pmw3901mb_set_optimum_performance(pmw3901mb_handle_t *handle);
 
 /**
  * @brief      burst read data
@@ -389,17 +389,17 @@ uint8_t pmw3901mb_get_product_id(pmw3901mb_handle_t *handle, uint8_t *id);
 uint8_t pmw3901mb_get_inverse_product_id(pmw3901mb_handle_t *handle, uint8_t *id);
 
 /**
- * @brief      get the revison id
+ * @brief      get the revision id
  * @param[in]  *handle points to a pmw3901mb handle structure
  * @param[out] *id points to an id buffer
  * @return     status code
  *             - 0 success
- *             - 1 get revison id failed
+ *             - 1 get revision id failed
  *             - 2 handle is NULL
  *             - 3 handle is not initialized
  * @note       none
  */
-uint8_t pmw3901mb_get_revison_id(pmw3901mb_handle_t *handle, uint8_t *id);
+uint8_t pmw3901mb_get_revision_id(pmw3901mb_handle_t *handle, uint8_t *id);
 
 /**
  * @brief      get the motion

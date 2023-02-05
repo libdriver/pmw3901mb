@@ -1,6 +1,6 @@
 /**
  * Copyright (c) 2015 - present LibDriver All rights reserved
- * 
+ *
  * The MIT License (MIT)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -19,7 +19,7 @@
  * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE. 
+ * SOFTWARE.
  *
  * @file      driver_pmw3901mb_interrupt_test.c
  * @brief     driver pmw3901mb interrupt test source file
@@ -53,17 +53,17 @@ uint8_t pmw3901mb_interrupt_test_irq_handler(float height_m)
     float delta_x;
     float delta_y;
     pmw3901mb_motion_t motion;
-    
+
     /* burst read */
     res = pmw3901mb_burst_read(&gs_handle, &motion);
     if (res != 0)
     {
         pmw3901mb_interface_debug_print("pmw3901mb: burst read failed.\n");
         (void)pmw3901mb_set_motion(&gs_handle, 0x00);
-        
+
         return 1;
     }
-    
+
     /* check the result */
     if (motion.is_valid == 1)
     {
@@ -73,20 +73,20 @@ uint8_t pmw3901mb_interrupt_test_irq_handler(float height_m)
         {
             pmw3901mb_interface_debug_print("pmw3901mb: delta raw to delta cm failed.\n");
             (void)pmw3901mb_set_motion(&gs_handle, 0x00);
-            
+
             return 1;
         }
-        
+
         /* convert the delta y */
         res = pmw3901mb_delta_raw_to_delta_cm(&gs_handle, motion.delta_y, height_m, (float *)&delta_y);
         if (res != 0)
         {
             pmw3901mb_interface_debug_print("pmw3901mb: delta raw to delta cm failed.\n");
             (void)pmw3901mb_set_motion(&gs_handle, 0x00);
-            
+
             return 1;
         }
-        
+
         /* print the result */
         pmw3901mb_interface_debug_print("pmw3901mb: find interrupt.\n");
         pmw3901mb_interface_debug_print("pmw3901mb: delta_x: %0.3fcm delta_y: %0.3fcm.\n", delta_x, delta_y);
@@ -96,20 +96,20 @@ uint8_t pmw3901mb_interrupt_test_irq_handler(float height_m)
         pmw3901mb_interface_debug_print("pmw3901mb: observation is 0x%02X.\n", motion.observation);
         pmw3901mb_interface_debug_print("pmw3901mb: shutter is 0x%04X.\n", motion.shutter);
         pmw3901mb_interface_debug_print("pmw3901mb: surface quality is 0x%04X.\n", motion.surface_quality);
-        
+
         /* set flag */
         gs_flag = 1;
     }
-    
+
     /* clear the interrupt flag */
     res = pmw3901mb_set_motion(&gs_handle, 0x00);
     if (res != 0)
     {
         pmw3901mb_interface_debug_print("pmw3901mb: set motion failed.\n");
-       
+
         return 1;
     }
-    
+
     return 0;
 }
 
@@ -125,7 +125,7 @@ uint8_t pmw3901mb_interrupt_test(uint32_t times)
 {
     uint8_t res;
     pmw3901mb_info_t info;
-    
+
     /* link interface function */
     DRIVER_PMW3901MB_LINK_INIT(&gs_handle, pmw3901mb_handle_t);
     DRIVER_PMW3901MB_LINK_SPI_INIT(&gs_handle, pmw3901mb_interface_spi_init);
@@ -137,13 +137,13 @@ uint8_t pmw3901mb_interrupt_test(uint32_t times)
     DRIVER_PMW3901MB_LINK_RESET_GPIO_WRITE(&gs_handle, pmw3901mb_interface_reset_gpio_write);
     DRIVER_PMW3901MB_LINK_DELAY_MS(&gs_handle, pmw3901mb_interface_delay_ms);
     DRIVER_PMW3901MB_LINK_DEBUG_PRINT(&gs_handle, pmw3901mb_interface_debug_print);
-    
+
     /* get information */
     res = pmw3901mb_info(&info);
     if (res != 0)
     {
         pmw3901mb_interface_debug_print("pmw3901mb: get info failed.\n");
-       
+
         return 1;
     }
     else
@@ -159,39 +159,39 @@ uint8_t pmw3901mb_interrupt_test(uint32_t times)
         pmw3901mb_interface_debug_print("pmw3901mb: max temperature is %0.1fC.\n", info.temperature_max);
         pmw3901mb_interface_debug_print("pmw3901mb: min temperature is %0.1fC.\n", info.temperature_min);
     }
-    
+
     /* start the interrupt test */
     pmw3901mb_interface_debug_print("pmw3901mb: start the interrupt test.\n");
-    
+
     /* init pmw3901mb */
     res = pmw3901mb_init(&gs_handle);
     if (res != 0)
     {
         pmw3901mb_interface_debug_print("pmw3901mb: init failed.\n");
-       
+
         return 1;
     }
-    
+
     /* chip power up */
     res = pmw3901mb_power_up(&gs_handle);
     if (res != 0)
     {
         pmw3901mb_interface_debug_print("pmw3901mb: power up failed.\n");
         (void)pmw3901mb_deinit(&gs_handle);
-        
+
         return 1;
     }
-    
-    /* set optimum performace */
-    res = pmw3901mb_set_optimum_performace(&gs_handle);
+
+    /* set optimum performance */
+    res = pmw3901mb_set_optimum_performance(&gs_handle);
     if (res != 0)
     {
-        pmw3901mb_interface_debug_print("pmw3901mb: set optimum performace failed.\n");
+        pmw3901mb_interface_debug_print("pmw3901mb: set optimum performance failed.\n");
         (void)pmw3901mb_deinit(&gs_handle);
-        
+
         return 1;
     }
-    
+
     /* wait */
     while (times != 0)
     {
@@ -202,10 +202,10 @@ uint8_t pmw3901mb_interrupt_test(uint32_t times)
         }
         times--;
     }
-    
+
     /* finish the interrupt test */
     pmw3901mb_interface_debug_print("pmw3901mb: finish the interrupt test.\n");
     (void)pmw3901mb_deinit(&gs_handle);
-    
+
     return 0;
 }
