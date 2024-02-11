@@ -1,6 +1,6 @@
 /**
  * @mainpage  LibDriver PMW3901MB
- * @brief     libdriver pmw3901mb is a full function driver of pmw3901mb and it can run in both MCU and Linux platform.
+ * @brief     LibDriver PMW3901MB is a full function driver of PMW3901MB and it can run in both MCU and Linux platform.
  * @version   1.0.0
  * @author    Shifeng Li
  *
