@@ -47,7 +47,7 @@ LibDriver PMW3901MB ist der voll funktionsfähige Treiber von pmw3901mb, der von
 
 Verweisen Sie auf eine plattformunabhängige SPI-Schnittstellenvorlage und stellen Sie Ihren Plattform-SPI-Treiber fertig.
 
-Fügen Sie /src, /interface und /example zu Ihrem Projekt hinzu.
+Fügen Sie das Verzeichnis /src, den Schnittstellentreiber für Ihre Plattform und Ihre eigenen Treiber zu Ihrem Projekt hinzu. Wenn Sie die Standardbeispieltreiber verwenden möchten, fügen Sie das Verzeichnis /example zu Ihrem Projekt hinzu.
 
 ### Nutzung
 
