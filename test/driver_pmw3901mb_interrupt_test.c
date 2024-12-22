@@ -41,7 +41,7 @@ static volatile uint8_t gs_flag;            /**< inner flag */
 
 /**
  * @brief     interrupt test irq
- * @param[in] height_m is the height(m)
+ * @param[in] height_m height(m)
  * @return    status code
  *            - 0 success
  *            - 1 run failed
@@ -115,7 +115,7 @@ uint8_t pmw3901mb_interrupt_test_irq_handler(float height_m)
 
 /**
  * @brief     interrupt test
- * @param[in] times is the test times
+ * @param[in] times test times
  * @return    status code
  *            - 0 success
  *            - 1 test failed

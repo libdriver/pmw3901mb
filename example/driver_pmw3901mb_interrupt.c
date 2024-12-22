@@ -41,7 +41,7 @@ static void (*gs_irq)(pmw3901mb_motion_t *motion, float delta_x, float delta_y) 
 
 /**
  * @brief     interrupt irq
- * @param[in] height_m is the height(m)
+ * @param[in] height_m height(m)
  * @return    status code
  *            - 0 success
  *            - 1 run failed
@@ -108,7 +108,7 @@ uint8_t pmw3901mb_interrupt_irq_handler(float height_m)
 
 /**
  * @brief     interrupt example init
- * @param[in] *callback points to a callback function
+ * @param[in] *callback pointer to a callback function
  * @return    status code
  *            - 0 success
  *            - 1 init failed

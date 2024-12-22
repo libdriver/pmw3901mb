@@ -74,10 +74,10 @@
 
 /**
  * @brief      read bytes
- * @param[in]  *handle points to a pmw3901mb handle structure
- * @param[in]  reg is the register address
- * @param[out] *buf points to a data buffer
- * @param[in]  len is the data length
+ * @param[in]  *handle pointer to a pmw3901mb handle structure
+ * @param[in]  reg register address
+ * @param[out] *buf pointer to a data buffer
+ * @param[in]  len data length
  * @return     status code
  *             - 0 success
  *             - 1 spi read failed
@@ -97,10 +97,10 @@ static uint8_t a_pmw3901mb_spi_read(pmw3901mb_handle_t *handle, uint8_t reg, uin
 
 /**
  * @brief     write bytes
- * @param[in] *handle points to a pmw3901mb handle structure
- * @param[in] reg is the register address
- * @param[in] *buf points to a data buffer
- * @param[in] len is the data length
+ * @param[in] *handle pointer to a pmw3901mb handle structure
+ * @param[in] reg register address
+ * @param[in] *buf pointer to a data buffer
+ * @param[in] len data length
  * @return    status code
  *            - 0 success
  *            - 1 spi write failed
@@ -120,7 +120,7 @@ static uint8_t a_pmw3901mb_spi_write(pmw3901mb_handle_t *handle, uint8_t reg, ui
 
 /**
  * @brief     initialize the chip
- * @param[in] *handle points to a pmw3901mb handle structure
+ * @param[in] *handle pointer to a pmw3901mb handle structure
  * @return    status code
  *            - 0 success
  *            - 1 spi or gpio initialization failed
@@ -245,7 +245,7 @@ uint8_t pmw3901mb_init(pmw3901mb_handle_t *handle)
 
 /**
  * @brief     close the chip
- * @param[in] *handle points to a pmw3901mb handle structure
+ * @param[in] *handle pointer to a pmw3901mb handle structure
  * @return    status code
  *            - 0 success
  *            - 1 spi or gpio deinit failed
@@ -297,7 +297,7 @@ uint8_t pmw3901mb_deinit(pmw3901mb_handle_t *handle)
 
 /**
  * @brief     power up the chip
- * @param[in] *handle points to a pmw3901mb handle structure
+ * @param[in] *handle pointer to a pmw3901mb handle structure
  * @return    status code
  *            - 0 success
  *            - 1 power up failed
@@ -386,8 +386,8 @@ uint8_t pmw3901mb_power_up(pmw3901mb_handle_t *handle)
 
 /**
  * @brief      burst read data
- * @param[in]  *handle points to a pmw3901mb handle structure
- * @param[out] *motion points to a motion structure
+ * @param[in]  *handle pointer to a pmw3901mb handle structure
+ * @param[out] *motion pointer to a motion structure
  * @return     status code
  *             - 0 success
  *             - 1 burst read failed
@@ -444,7 +444,7 @@ uint8_t pmw3901mb_burst_read(pmw3901mb_handle_t *handle, pmw3901mb_motion_t *mot
 
 /**
  * @brief     start frame capture
- * @param[in] *handle points to a pmw3901mb handle structure
+ * @param[in] *handle pointer to a pmw3901mb handle structure
  * @return    status code
  *            - 0 success
  *            - 1 start frame capture failed
@@ -544,7 +544,7 @@ uint8_t pmw3901mb_start_frame_capture(pmw3901mb_handle_t *handle)
 
 /**
  * @brief     stop frame capture
- * @param[in] *handle points to a pmw3901mb handle structure
+ * @param[in] *handle pointer to a pmw3901mb handle structure
  * @return    status code
  *            - 0 success
  *            - 1 stop frame capture failed
@@ -652,8 +652,8 @@ uint8_t pmw3901mb_stop_frame_capture(pmw3901mb_handle_t *handle)
 
 /**
  * @brief      get the frame
- * @param[in]  *handle points to a pmw3901mb handle structure
- * @param[out] **frame points to a frame buffer
+ * @param[in]  *handle pointer to a pmw3901mb handle structure
+ * @param[out] **frame pointer to a frame buffer
  * @return     status code
  *             - 0 success
  *             - 1 get frame failed
@@ -804,7 +804,7 @@ uint8_t pmw3901mb_get_frame(pmw3901mb_handle_t *handle, uint8_t frame[35][35])
 
 /**
  * @brief     set the optimum performance
- * @param[in] *handle points to a pmw3901mb handle structure
+ * @param[in] *handle pointer to a pmw3901mb handle structure
  * @return    status code
  *            - 0 success
  *            - 1 set optimum performance failed
@@ -1644,8 +1644,8 @@ uint8_t pmw3901mb_set_optimum_performance(pmw3901mb_handle_t *handle)
 
 /**
  * @brief      get the product id
- * @param[in]  *handle points to a pmw3901mb handle structure
- * @param[out] *id points to an id buffer
+ * @param[in]  *handle pointer to a pmw3901mb handle structure
+ * @param[out] *id pointer to an id buffer
  * @return     status code
  *             - 0 success
  *             - 1 get product id failed
@@ -1679,8 +1679,8 @@ uint8_t pmw3901mb_get_product_id(pmw3901mb_handle_t *handle, uint8_t *id)
 
 /**
  * @brief      get the inverse product id
- * @param[in]  *handle points to a pmw3901mb handle structure
- * @param[out] *id points to an id buffer
+ * @param[in]  *handle pointer to a pmw3901mb handle structure
+ * @param[out] *id pointer to an id buffer
  * @return     status code
  *             - 0 success
  *             - 1 get inverse product id failed
@@ -1714,8 +1714,8 @@ uint8_t pmw3901mb_get_inverse_product_id(pmw3901mb_handle_t *handle, uint8_t *id
 
 /**
  * @brief      get the revision id
- * @param[in]  *handle points to a pmw3901mb handle structure
- * @param[out] *id points to an id buffer
+ * @param[in]  *handle pointer to a pmw3901mb handle structure
+ * @param[out] *id pointer to an id buffer
  * @return     status code
  *             - 0 success
  *             - 1 get revision id failed
@@ -1749,7 +1749,7 @@ uint8_t pmw3901mb_get_revision_id(pmw3901mb_handle_t *handle, uint8_t *id)
 
 /**
  * @brief     reset the chip
- * @param[in] *handle points to a pmw3901mb handle structure
+ * @param[in] *handle pointer to a pmw3901mb handle structure
  * @return    status code
  *            - 0 success
  *            - 1 reset failed
@@ -1785,7 +1785,7 @@ uint8_t pmw3901mb_reset(pmw3901mb_handle_t *handle)
 
 /**
  * @brief     shutdown the chip
- * @param[in] *handle points to a pmw3901mb handle structure
+ * @param[in] *handle pointer to a pmw3901mb handle structure
  * @return    status code
  *            - 0 success
  *            - 1 shutdown failed
@@ -1821,8 +1821,8 @@ uint8_t pmw3901mb_shutdown(pmw3901mb_handle_t *handle)
 
 /**
  * @brief      get the motion
- * @param[in]  *handle points to a pmw3901mb handle structure
- * @param[out] *motion points to a motion buffer
+ * @param[in]  *handle pointer to a pmw3901mb handle structure
+ * @param[out] *motion pointer to a motion buffer
  * @return     status code
  *             - 0 success
  *             - 1 get motion failed
@@ -1856,8 +1856,8 @@ uint8_t pmw3901mb_get_motion(pmw3901mb_handle_t *handle, uint8_t *motion)
 
 /**
  * @brief     set the motion
- * @param[in] *handle points to a pmw3901mb handle structure
- * @param[in] motion is the set motion
+ * @param[in] *handle pointer to a pmw3901mb handle structure
+ * @param[in] motion set motion
  * @return    status code
  *            - 0 success
  *            - 1 set motion failed
@@ -1891,8 +1891,8 @@ uint8_t pmw3901mb_set_motion(pmw3901mb_handle_t *handle, uint8_t motion)
 
 /**
  * @brief      get the delta x
- * @param[in]  *handle points to a pmw3901mb handle structure
- * @param[out] *delta points to a delta buffer
+ * @param[in]  *handle pointer to a pmw3901mb handle structure
+ * @param[out] *delta pointer to a delta buffer
  * @return     status code
  *             - 0 success
  *             - 1 get delta x failed
@@ -1936,8 +1936,8 @@ uint8_t pmw3901mb_get_delta_x(pmw3901mb_handle_t *handle, int16_t *delta)
 
 /**
  * @brief      get the delta y
- * @param[in]  *handle points to a pmw3901mb handle structure
- * @param[out] *delta points to a delta buffer
+ * @param[in]  *handle pointer to a pmw3901mb handle structure
+ * @param[out] *delta pointer to a delta buffer
  * @return     status code
  *             - 0 success
  *             - 1 get delta y failed
@@ -1981,9 +1981,9 @@ uint8_t pmw3901mb_get_delta_y(pmw3901mb_handle_t *handle, int16_t *delta)
 
 /**
  * @brief      get the motion burst
- * @param[in]  *handle points to a pmw3901mb handle structure
- * @param[out] *burst points to a burst buffer
- * @param[in]  len is the burst length
+ * @param[in]  *handle pointer to a pmw3901mb handle structure
+ * @param[out] *burst pointer to a burst buffer
+ * @param[in]  len burst length
  * @return     status code
  *             - 0 success
  *             - 1 get motion burst failed
@@ -2017,8 +2017,8 @@ uint8_t pmw3901mb_get_motion_burst(pmw3901mb_handle_t *handle, uint8_t *burst, u
 
 /**
  * @brief      get the surface quality
- * @param[in]  *handle points to a pmw3901mb handle structure
- * @param[out] *squal points to a surface quality buffer
+ * @param[in]  *handle pointer to a pmw3901mb handle structure
+ * @param[out] *squal pointer to a surface quality buffer
  * @return     status code
  *             - 0 success
  *             - 1 get squal failed
@@ -2052,8 +2052,8 @@ uint8_t pmw3901mb_get_squal(pmw3901mb_handle_t *handle, uint8_t *squal)
 
 /**
  * @brief      get the average raw data value
- * @param[in]  *handle points to a pmw3901mb handle structure
- * @param[out] *sum points to a sum buffer
+ * @param[in]  *handle pointer to a pmw3901mb handle structure
+ * @param[out] *sum pointer to a sum buffer
  * @return     status code
  *             - 0 success
  *             - 1 get raw data sum failed
@@ -2087,8 +2087,8 @@ uint8_t pmw3901mb_get_raw_data_sum(pmw3901mb_handle_t *handle, uint8_t *sum)
 
 /**
  * @brief      get the maximum raw data value
- * @param[in]  *handle points to a pmw3901mb handle structure
- * @param[out] *max points to a max buffer
+ * @param[in]  *handle pointer to a pmw3901mb handle structure
+ * @param[out] *max pointer to a max buffer
  * @return     status code
  *             - 0 success
  *             - 1 get max raw data failed
@@ -2122,8 +2122,8 @@ uint8_t pmw3901mb_get_max_raw_data(pmw3901mb_handle_t *handle, uint8_t *max)
 
 /**
  * @brief      get the minimum raw data value
- * @param[in]  *handle points to a pmw3901mb handle structure
- * @param[out] *min points to a min buffer
+ * @param[in]  *handle pointer to a pmw3901mb handle structure
+ * @param[out] *min pointer to a min buffer
  * @return     status code
  *             - 0 success
  *             - 1 get min raw data failed
@@ -2157,8 +2157,8 @@ uint8_t pmw3901mb_get_min_raw_data(pmw3901mb_handle_t *handle, uint8_t *min)
 
 /**
  * @brief      get the shutter
- * @param[in]  *handle points to a pmw3901mb handle structure
- * @param[out] *shutter points to a shutter buffer
+ * @param[in]  *handle pointer to a pmw3901mb handle structure
+ * @param[out] *shutter pointer to a shutter buffer
  * @return     status code
  *             - 0 success
  *             - 1 get shutter failed
@@ -2202,8 +2202,8 @@ uint8_t pmw3901mb_get_shutter(pmw3901mb_handle_t *handle, uint16_t *shutter)
 
 /**
  * @brief      get the observation
- * @param[in]  *handle points to a pmw3901mb handle structure
- * @param[out] *observation points to an observation buffer
+ * @param[in]  *handle pointer to a pmw3901mb handle structure
+ * @param[out] *observation pointer to an observation buffer
  * @return     status code
  *             - 0 success
  *             - 1 get observation failed
@@ -2238,8 +2238,8 @@ uint8_t pmw3901mb_get_observation(pmw3901mb_handle_t *handle, uint8_t *observati
 
 /**
  * @brief     set the observation
- * @param[in] *handle points to a pmw3901mb handle structure
- * @param[in] *observation is the input observation
+ * @param[in] *handle pointer to a pmw3901mb handle structure
+ * @param[in] observation input observation
  * @return    status code
  *            - 0 success
  *            - 1 set observation failed
@@ -2273,9 +2273,9 @@ uint8_t pmw3901mb_set_observation(pmw3901mb_handle_t *handle, uint8_t observatio
 
 /**
  * @brief      get the raw data grab
- * @param[in]  *handle points to a pmw3901mb handle structure
- * @param[out] *grab points to a grab buffer
- * @param[in]  len is the grab length
+ * @param[in]  *handle pointer to a pmw3901mb handle structure
+ * @param[out] *grab pointer to a grab buffer
+ * @param[in]  len grab length
  * @return     status code
  *             - 0 success
  *             - 1 get raw data grab failed
@@ -2313,9 +2313,9 @@ uint8_t pmw3901mb_get_raw_data_grab(pmw3901mb_handle_t *handle, uint8_t *grab, u
 
 /**
  * @brief     set the raw data grab
- * @param[in] *handle points to a pmw3901mb handle structure
- * @param[in] *grab points to a raw data grab buffer
- * @param[in] len is the grab length
+ * @param[in] *handle pointer to a pmw3901mb handle structure
+ * @param[in] *grab pointer to a raw data grab buffer
+ * @param[in] len grab length
  * @return    status code
  *            - 0 success
  *            - 1 set raw data grab failed
@@ -2353,8 +2353,8 @@ uint8_t pmw3901mb_set_raw_data_grab(pmw3901mb_handle_t *handle, uint8_t *grab, u
 
 /**
  * @brief      get the raw data grab status
- * @param[in]  *handle points to a pmw3901mb handle structure
- * @param[out] *status points to a status buffer
+ * @param[in]  *handle pointer to a pmw3901mb handle structure
+ * @param[out] *status pointer to a status buffer
  * @return     status code
  *             - 0 success
  *             - 1 get raw data grab status failed
@@ -2388,10 +2388,10 @@ uint8_t pmw3901mb_get_raw_data_grab_status(pmw3901mb_handle_t *handle, uint8_t *
 
 /**
  * @brief      convert the delta raw to the delta cm
- * @param[in]  *handle points to a pmw3901mb handle structure
- * @param[in]  raw is the delta raw
- * @param[in]  height_m is the height(m)
- * @param[out] *cm points to a cm buffer
+ * @param[in]  *handle pointer to a pmw3901mb handle structure
+ * @param[in]  raw delta raw
+ * @param[in]  height_m height(m)
+ * @param[out] *cm pointer to a cm buffer
  * @return     status code
  *             - 0 success
  *             - 1 delta raw to delta cm failed
@@ -2417,10 +2417,10 @@ uint8_t pmw3901mb_delta_raw_to_delta_cm(pmw3901mb_handle_t *handle, int16_t raw,
 
 /**
  * @brief     set the chip register
- * @param[in] *handle points to a pmw3901mb handle structure
- * @param[in] reg is the register address
- * @param[in] *buf points to a data buffer
- * @param[in] len is the data buffer length
+ * @param[in] *handle pointer to a pmw3901mb handle structure
+ * @param[in] reg register address
+ * @param[in] *buf pointer to a data buffer
+ * @param[in] len data buffer length
  * @return    status code
  *            - 0 success
  *            - 1 write failed
@@ -2444,10 +2444,10 @@ uint8_t pmw3901mb_set_reg(pmw3901mb_handle_t *handle, uint8_t reg, uint8_t *buf,
 
 /**
  * @brief      get the chip register
- * @param[in]  *handle points to a pmw3901mb handle structure
- * @param[in]  reg is the register address
- * @param[out] *buf points to a data buffer
- * @param[in]  len is the data buffer length
+ * @param[in]  *handle pointer to a pmw3901mb handle structure
+ * @param[in]  reg register address
+ * @param[out] *buf pointer to a data buffer
+ * @param[in]  len data buffer length
  * @return     status code
  *             - 0 success
  *             - 1 read failed
@@ -2471,7 +2471,7 @@ uint8_t pmw3901mb_get_reg(pmw3901mb_handle_t *handle, uint8_t reg, uint8_t *buf,
 
 /**
  * @brief      get chip's information
- * @param[out] *info points to a pmw3901mb info structure
+ * @param[out] *info pointer to a pmw3901mb info structure
  * @return     status code
  *             - 0 success
  *             - 2 handle is NULL
