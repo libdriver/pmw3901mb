@@ -70,10 +70,10 @@ uint8_t pmw3901mb_basic_deinit(void);
 
 /**
  * @brief      basic example read
- * @param[in]  height_m is the height(m)
- * @param[out] *motion points to a motion structure
- * @param[out] *delta_x points to a delta_x buffer
- * @param[out] *delta_y points to a delta_y buffer
+ * @param[in]  height_m height(m)
+ * @param[out] *motion pointer to a motion structure
+ * @param[out] *delta_x pointer to a delta_x buffer
+ * @param[out] *delta_y pointer to a delta_y buffer
  * @return     status code
  *             - 0 success
  *             - 1 read failed

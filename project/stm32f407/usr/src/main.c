@@ -69,7 +69,7 @@ void EXTI0_IRQHandler(void)
 
 /**
  * @brief     gpio exti callback
- * @param[in] pin is the gpio pin
+ * @param[in] pin gpio pin
  * @note      none
  */
 void HAL_GPIO_EXTI_Callback(uint16_t pin)
@@ -85,9 +85,9 @@ void HAL_GPIO_EXTI_Callback(uint16_t pin)
 
 /**
  * @brief     callback
- * @param[in] *motion points to a pmw3901mb_motion_t structure
- * @param[in] delta_x is the delta_x in cm
- * @param[in] delta_y is the delta_y in cm
+ * @param[in] *motion pointer to a pmw3901mb_motion_t structure
+ * @param[in] delta_x delta_x in cm
+ * @param[in] delta_y delta_y in cm
  * @note      none
  */
 static void a_callback(pmw3901mb_motion_t *motion, float delta_x, float delta_y)
@@ -112,8 +112,8 @@ static void a_callback(pmw3901mb_motion_t *motion, float delta_x, float delta_y)
 
 /**
  * @brief     pmw3901mb full function
- * @param[in] argc is arg numbers
- * @param[in] **argv is the arg address
+ * @param[in] argc arg numbers
+ * @param[in] **argv arg address
  * @return    status code
  *            - 0 success
  *            - 1 run failed

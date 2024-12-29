@@ -95,7 +95,7 @@ uint8_t pmw3901mb_frame_init(void)
 
 /**
  * @brief      frame example read
- * @param[out] **frame points to a frame buffer
+ * @param[out] **frame pointer to a frame buffer
  * @return     status code
  *             - 0 success
  *             - 1 read failed

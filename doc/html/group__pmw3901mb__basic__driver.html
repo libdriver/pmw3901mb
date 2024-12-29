@@ -294,8 +294,8 @@ Functions</h2></td></tr>
 <p>burst read data </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">*handle</td><td>points to a pmw3901mb handle structure </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">*motion</td><td>points to a motion structure </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">*handle</td><td>pointer to a pmw3901mb handle structure </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">*motion</td><td>pointer to a motion structure </td></tr>
   </table>
   </dd>
 </dl>
@@ -331,7 +331,7 @@ Functions</h2></td></tr>
 <p>close the chip </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">*handle</td><td>points to a pmw3901mb handle structure </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">*handle</td><td>pointer to a pmw3901mb handle structure </td></tr>
   </table>
   </dd>
 </dl>
@@ -390,10 +390,10 @@ Functions</h2></td></tr>
 <p>convert the delta raw to the delta cm </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">*handle</td><td>points to a pmw3901mb handle structure </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">raw</td><td>is the delta raw </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">height_m</td><td>is the height(m) </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">*cm</td><td>points to a cm buffer </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">*handle</td><td>pointer to a pmw3901mb handle structure </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">raw</td><td>delta raw </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">height_m</td><td>height(m) </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">*cm</td><td>pointer to a cm buffer </td></tr>
   </table>
   </dd>
 </dl>
@@ -439,8 +439,8 @@ Functions</h2></td></tr>
 <p>get the delta x </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">*handle</td><td>points to a pmw3901mb handle structure </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">*delta</td><td>points to a delta buffer </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">*handle</td><td>pointer to a pmw3901mb handle structure </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">*delta</td><td>pointer to a delta buffer </td></tr>
   </table>
   </dd>
 </dl>
@@ -486,8 +486,8 @@ Functions</h2></td></tr>
 <p>get the delta y </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">*handle</td><td>points to a pmw3901mb handle structure </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">*delta</td><td>points to a delta buffer </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">*handle</td><td>pointer to a pmw3901mb handle structure </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">*delta</td><td>pointer to a delta buffer </td></tr>
   </table>
   </dd>
 </dl>
@@ -533,8 +533,8 @@ Functions</h2></td></tr>
 <p>get the frame </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">*handle</td><td>points to a pmw3901mb handle structure </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">**frame</td><td>points to a frame buffer </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">*handle</td><td>pointer to a pmw3901mb handle structure </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">**frame</td><td>pointer to a frame buffer </td></tr>
   </table>
   </dd>
 </dl>
@@ -580,8 +580,8 @@ Functions</h2></td></tr>
 <p>get the inverse product id </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">*handle</td><td>points to a pmw3901mb handle structure </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">*id</td><td>points to an id buffer </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">*handle</td><td>pointer to a pmw3901mb handle structure </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">*id</td><td>pointer to an id buffer </td></tr>
   </table>
   </dd>
 </dl>
@@ -627,8 +627,8 @@ Functions</h2></td></tr>
 <p>get the maximum raw data value </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">*handle</td><td>points to a pmw3901mb handle structure </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">*max</td><td>points to a max buffer </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">*handle</td><td>pointer to a pmw3901mb handle structure </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">*max</td><td>pointer to a max buffer </td></tr>
   </table>
   </dd>
 </dl>
@@ -674,8 +674,8 @@ Functions</h2></td></tr>
 <p>get the minimum raw data value </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">*handle</td><td>points to a pmw3901mb handle structure </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">*min</td><td>points to a min buffer </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">*handle</td><td>pointer to a pmw3901mb handle structure </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">*min</td><td>pointer to a min buffer </td></tr>
   </table>
   </dd>
 </dl>
@@ -721,8 +721,8 @@ Functions</h2></td></tr>
 <p>get the motion </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">*handle</td><td>points to a pmw3901mb handle structure </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">*motion</td><td>points to a motion buffer </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">*handle</td><td>pointer to a pmw3901mb handle structure </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">*motion</td><td>pointer to a motion buffer </td></tr>
   </table>
   </dd>
 </dl>
@@ -774,9 +774,9 @@ Functions</h2></td></tr>
 <p>get the motion burst </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">*handle</td><td>points to a pmw3901mb handle structure </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">*burst</td><td>points to a burst buffer </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">len</td><td>is the burst length </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">*handle</td><td>pointer to a pmw3901mb handle structure </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">*burst</td><td>pointer to a burst buffer </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">len</td><td>burst length </td></tr>
   </table>
   </dd>
 </dl>
@@ -822,8 +822,8 @@ Functions</h2></td></tr>
 <p>get the observation </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">*handle</td><td>points to a pmw3901mb handle structure </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">*observation</td><td>points to an observation buffer </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">*handle</td><td>pointer to a pmw3901mb handle structure </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">*observation</td><td>pointer to an observation buffer </td></tr>
   </table>
   </dd>
 </dl>
@@ -869,8 +869,8 @@ Functions</h2></td></tr>
 <p>get the product id </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">*handle</td><td>points to a pmw3901mb handle structure </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">*id</td><td>points to an id buffer </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">*handle</td><td>pointer to a pmw3901mb handle structure </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">*id</td><td>pointer to an id buffer </td></tr>
   </table>
   </dd>
 </dl>
@@ -922,9 +922,9 @@ Functions</h2></td></tr>
 <p>get the raw data grab </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">*handle</td><td>points to a pmw3901mb handle structure </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">*grab</td><td>points to a grab buffer </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">len</td><td>is the grab length </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">*handle</td><td>pointer to a pmw3901mb handle structure </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">*grab</td><td>pointer to a grab buffer </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">len</td><td>grab length </td></tr>
   </table>
   </dd>
 </dl>
@@ -970,8 +970,8 @@ Functions</h2></td></tr>
 <p>get the raw data grab status </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">*handle</td><td>points to a pmw3901mb handle structure </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">*status</td><td>points to a status buffer </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">*handle</td><td>pointer to a pmw3901mb handle structure </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">*status</td><td>pointer to a status buffer </td></tr>
   </table>
   </dd>
 </dl>
@@ -1017,8 +1017,8 @@ Functions</h2></td></tr>
 <p>get the average raw data value </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">*handle</td><td>points to a pmw3901mb handle structure </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">*sum</td><td>points to a sum buffer </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">*handle</td><td>pointer to a pmw3901mb handle structure </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">*sum</td><td>pointer to a sum buffer </td></tr>
   </table>
   </dd>
 </dl>
@@ -1064,8 +1064,8 @@ Functions</h2></td></tr>
 <p>get the revision id </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">*handle</td><td>points to a pmw3901mb handle structure </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">*id</td><td>points to an id buffer </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">*handle</td><td>pointer to a pmw3901mb handle structure </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">*id</td><td>pointer to an id buffer </td></tr>
   </table>
   </dd>
 </dl>
@@ -1111,8 +1111,8 @@ Functions</h2></td></tr>
 <p>get the shutter </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">*handle</td><td>points to a pmw3901mb handle structure </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">*shutter</td><td>points to a shutter buffer </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">*handle</td><td>pointer to a pmw3901mb handle structure </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">*shutter</td><td>pointer to a shutter buffer </td></tr>
   </table>
   </dd>
 </dl>
@@ -1158,8 +1158,8 @@ Functions</h2></td></tr>
 <p>get the surface quality </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">*handle</td><td>points to a pmw3901mb handle structure </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">*squal</td><td>points to a surface quality buffer </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">*handle</td><td>pointer to a pmw3901mb handle structure </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">*squal</td><td>pointer to a surface quality buffer </td></tr>
   </table>
   </dd>
 </dl>
@@ -1195,7 +1195,7 @@ Functions</h2></td></tr>
 <p>get chip's information </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[out]</td><td class="paramname">*info</td><td>points to a pmw3901mb info structure </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">*info</td><td>pointer to a pmw3901mb info structure </td></tr>
   </table>
   </dd>
 </dl>
@@ -1229,7 +1229,7 @@ Functions</h2></td></tr>
 <p>initialize the chip </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">*handle</td><td>points to a pmw3901mb handle structure </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">*handle</td><td>pointer to a pmw3901mb handle structure </td></tr>
   </table>
   </dd>
 </dl>
@@ -1267,7 +1267,7 @@ Functions</h2></td></tr>
 <p>power up the chip </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">*handle</td><td>points to a pmw3901mb handle structure </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">*handle</td><td>pointer to a pmw3901mb handle structure </td></tr>
   </table>
   </dd>
 </dl>
@@ -1303,7 +1303,7 @@ Functions</h2></td></tr>
 <p>reset the chip </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">*handle</td><td>points to a pmw3901mb handle structure </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">*handle</td><td>pointer to a pmw3901mb handle structure </td></tr>
   </table>
   </dd>
 </dl>
@@ -1349,8 +1349,8 @@ Functions</h2></td></tr>
 <p>set the motion </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">*handle</td><td>points to a pmw3901mb handle structure </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">motion</td><td>is the set motion </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">*handle</td><td>pointer to a pmw3901mb handle structure </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">motion</td><td>set motion </td></tr>
   </table>
   </dd>
 </dl>
@@ -1396,8 +1396,8 @@ Functions</h2></td></tr>
 <p>set the observation </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">*handle</td><td>points to a pmw3901mb handle structure </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">*observation</td><td>is the input observation </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">*handle</td><td>pointer to a pmw3901mb handle structure </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">observation</td><td>input observation </td></tr>
   </table>
   </dd>
 </dl>
@@ -1433,7 +1433,7 @@ Functions</h2></td></tr>
 <p>set the optimum performance </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">*handle</td><td>points to a pmw3901mb handle structure </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">*handle</td><td>pointer to a pmw3901mb handle structure </td></tr>
   </table>
   </dd>
 </dl>
@@ -1485,9 +1485,9 @@ Functions</h2></td></tr>
 <p>set the raw data grab </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">*handle</td><td>points to a pmw3901mb handle structure </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">*grab</td><td>points to a raw data grab buffer </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">len</td><td>is the grab length </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">*handle</td><td>pointer to a pmw3901mb handle structure </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">*grab</td><td>pointer to a raw data grab buffer </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">len</td><td>grab length </td></tr>
   </table>
   </dd>
 </dl>
@@ -1523,7 +1523,7 @@ Functions</h2></td></tr>
 <p>shutdown the chip </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">*handle</td><td>points to a pmw3901mb handle structure </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">*handle</td><td>pointer to a pmw3901mb handle structure </td></tr>
   </table>
   </dd>
 </dl>
@@ -1559,7 +1559,7 @@ Functions</h2></td></tr>
 <p>start frame capture </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">*handle</td><td>points to a pmw3901mb handle structure </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">*handle</td><td>pointer to a pmw3901mb handle structure </td></tr>
   </table>
   </dd>
 </dl>
@@ -1595,7 +1595,7 @@ Functions</h2></td></tr>
 <p>stop frame capture </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">*handle</td><td>points to a pmw3901mb handle structure </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">*handle</td><td>pointer to a pmw3901mb handle structure </td></tr>
   </table>
   </dd>
 </dl>

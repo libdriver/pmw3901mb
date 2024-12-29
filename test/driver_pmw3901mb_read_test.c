@@ -40,8 +40,8 @@ static pmw3901mb_handle_t gs_handle;        /**< pmw3901mb handle */
 
 /**
  * @brief     read test
- * @param[in] height_m is the height(m)
- * @param[in] times is the test times
+ * @param[in] height_m height(m)
+ * @param[in] times test times
  * @return    status code
  *            - 0 success
  *            - 1 test failed
