@@ -44,8 +44,8 @@
 #define SUPPLY_VOLTAGE_MIN        1.8f                              /**< chip min supply voltage */
 #define SUPPLY_VOLTAGE_MAX        3.6f                              /**< chip max supply voltage */
 #define MAX_CURRENT               70.0f                             /**< chip max current */
-#define TEMPERATURE_MIN           -40.0f                            /**< chip min operating temperature */
-#define TEMPERATURE_MAX           85.0f                             /**< chip max operating temperature */
+#define TEMPERATURE_MIN           0.0f                              /**< chip min operating temperature */
+#define TEMPERATURE_MAX           40.0f                             /**< chip max operating temperature */
 #define DRIVER_VERSION            1000                              /**< driver version */
 
 /**
@@ -221,7 +221,7 @@ uint8_t pmw3901mb_init(pmw3901mb_handle_t *handle)
         
         return 5;                                                                        /* return error */
     }
-    handle->delay_ms(10);                                                                /* delay 10 ms */
+    handle->delay_ms(50);                                                                /* delay 50 ms */
     if (a_pmw3901mb_spi_read(handle, PMW3901MB_REG_PRODUCT_ID, (uint8_t *)&id, 1) != 0)  /* get product id */
     {
         handle->debug_print("pmw3901mb: get product id failed.\n");                      /* get product id failed */
@@ -334,7 +334,7 @@ uint8_t pmw3901mb_power_up(pmw3901mb_handle_t *handle)
        
         return 1;                                                                                /* return error */
     }
-    handle->delay_ms(10);                                                                        /* delay 10 ms */
+    handle->delay_ms(50);                                                                        /* delay 50 ms */
     cmd = 0x5A;                                                                                  /* power up command */
     res = a_pmw3901mb_spi_write(handle, PMW3901MB_REG_POWER_UP_RESET, (uint8_t *)&cmd, 1);       /* set power up reset */
     if (res != 0)                                                                                /* check result */
@@ -417,7 +417,7 @@ uint8_t pmw3901mb_burst_read(pmw3901mb_handle_t *handle, pmw3901mb_motion_t *mot
     }
     if ((motion->raw[0] & (1 << 7)) != 0)                                                             /* check motion flag */
     {
-        if ((motion->raw[6] < 0x19) || (motion->raw[10] == 0x1F))                                     /* check data */
+        if ((motion->raw[6] < 0x19) && (motion->raw[10] == 0x1F))                                     /* check data */
         {
             motion->is_valid = 2;                                                                     /* set invalid */
             
