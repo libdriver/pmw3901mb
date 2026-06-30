@@ -151,8 +151,8 @@ pmw3901mb: driver version is 1.0.
 pmw3901mb: min supply voltage is 1.8V.
 pmw3901mb: max supply voltage is 3.6V.
 pmw3901mb: max current is 70.00mA.
-pmw3901mb: max temperature is 85.0C.
-pmw3901mb: min temperature is -40.0C.
+pmw3901mb: max temperature is 40.0C.
+pmw3901mb: min temperature is 0.0C.
 ```
 
 ```shell

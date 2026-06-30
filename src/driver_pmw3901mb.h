@@ -70,7 +70,7 @@ typedef struct pmw3901mb_motion_s
     uint8_t raw_min;                 /**< raw min */
     uint8_t observation;             /**< observation */
     uint16_t shutter;                /**< shutter */
-    uint8_t is_valid;                /**< valid flag, 0 meas invalid, 1 meas invalid, 2 meas inner errors */
+    uint8_t is_valid;                /**< valid flag, 0 is invalid, 1 invalid, 2 is inner errors */
 } pmw3901mb_motion_t;
 
 /**
